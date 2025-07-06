@@ -1,0 +1,78 @@
+CREATE TABLE Osoba(
+    ID_Osobe INT PRIMARY KEY,
+    Ulica VARCHAR2(30) NOT NULL, 
+    Broj VARCHAR2(5) NOT NULL,
+    Tip_Osobe VARCHAR(10) NOT NULL CHECK (Tip_Osobe IN ('Musterija' , 'Zaposleni'))
+);
+
+CREATE TABLE Zaposleni(
+    ID_Osobe INT PRIMARY KEY,
+    Lime VARCHAR(20) NOT NULL,
+    Srednje_Slovo VARCHAR(1) NOT NULL,
+    Prezime VARCHAR(20) NOT NULL,
+    JMBG VARCHAR(13) NOT NULL UNIQUE,
+    Tip_Zaposlenog VARCHAR(13) NOT NULL CHECK (Tip_Zaposlenog IN ('Vozac' , 'Administrator')),
+    Broj_Vozacke VARCHAR(10),
+    Strucna_Sprema VARCHAR(30),
+    CONSTRAINT ID_Osobe_Zaposleni FOREIGN KEY (ID_Osobe) REFERENCES Osoba(ID_Osobe) ON DELETE CASCADE
+);
+
+CREATE TABLE Musterija(
+    ID_Osobe INT PRIMARY KEY,
+    Broj_Koriscenih_Voznji INT DEFAULT 0 NOT NULL,
+    CONSTRAINT ID_Osobe_Musterija FOREIGN KEY (ID_Osobe) REFERENCES Osoba(ID_Osobe) ON DELETE CASCADE
+);
+
+CREATE TABLE Vozilo(
+    ID_Vozila INT PRIMARY KEY,
+    Marka VARCHAR(20) NOT NULL , 
+    Tip VARCHAR(20) NOT NULL,
+    Tip_Vozila VARCHAR(20) CHECK(Tip_Vozila IN ('Licno_Vozilo','Vozilo_Udruzenja')),
+    Godina_proizvodnje INT,
+    Datum_Isteka_Registracije DATE NULL,
+    Registarska_Oznaka VARCHAR(9) UNIQUE NULL,
+    VlasnikID INT NULL,
+    Boja VARCHAR(10),
+    CONSTRAINT Vlasnik_VozilaFK FOREIGN KEY (VlasnikID) REFERENCES Zaposleni(ID_Osobe) ON DELETE CASCADE
+);
+
+CREATE TABLE Voznja (
+    ID_Voznje INT PRIMARY KEY,
+    MusterijaID INT NOT NULL ,
+    Pocetna_Stanica VARCHAR(50) NOT NULL,
+    Krajnja_Stanica VARCHAR(50) NOT NULL,
+    Br_Tel_Narucivanja VARCHAR(15) NOT NULL,
+    AdministratorID INT NOT NULL,
+    Vreme_Javljanja TIMESTAMP NOT NULL,
+    Br_Tel_Primljenog_Poziva VARCHAR(15) NOT NULL,
+    VozacID INT NOT NULL,
+    Vreme_Pocetka TIMESTAMP NOT NULL,
+    Vreme_Kraja TIMESTAMP,
+    CONSTRAINT Musterija_Narucuje_VoznjuFK FOREIGN KEY (MusterijaID) REFERENCES Musterija(ID_Osobe) ON DELETE CASCADE,
+    CONSTRAINT Administrator_Se_JavljaFK FOREIGN KEY (AdministratorID) REFERENCES Zaposleni(ID_Osobe) ON DELETE CASCADE,
+    CONSTRAINT Vozac_voziFK FOREIGN KEY (VozacID) REFERENCES Zaposleni(ID_Osobe) ON DELETE CASCADE
+);
+
+CREATE TABLE Upravlja(
+    ID_Upravljanja INT PRIMARY KEY,
+    VozacID INT NOT NULL,
+    VoziloID INT NOT NULL,
+    Datum_od DATE NOT NULL,
+    Datum_do DATE,
+    CONSTRAINT Vozac_UpravljaFK FOREIGN KEY (VozacID) REFERENCES Zaposleni(ID_Osobe) ON DELETE CASCADE,
+    CONSTRAINT Vozilo_UpravljaFK FOREIGN KEY (VoziloID) REFERENCES Vozilo(ID_Vozila) ON DELETE CASCADE
+);
+
+CREATE TABLE Brojevi_Telefona(
+    ID_Osobe NOT NULL,
+    Broj_Telefona VARCHAR(15) NOT NULL,
+    CONSTRAINT Broj_Telefona_OsobePK PRIMARY KEY (ID_Osobe, Broj_Telefona),
+    CONSTRAINT Osobi_Pripada_TelefonFK FOREIGN KEY (ID_Osobe) REFERENCES Osoba(ID_Osobe) ON DELETE CASCADE
+);
+
+CREATE TABLE Kategorije(
+    ID_Vozaca NOT NULL,
+    Kategorija VARCHAR(3) NOT NULL,
+    CONSTRAINT Vozac_Ima_Kategorije PRIMARY KEY (ID_Vozaca, Kategorija),
+    CONSTRAINT Kategorija_Pripada_Vozacu FOREIGN KEY (ID_Vozaca) REFERENCES Zaposleni(ID_Osobe) ON DELETE CASCADE
+);
