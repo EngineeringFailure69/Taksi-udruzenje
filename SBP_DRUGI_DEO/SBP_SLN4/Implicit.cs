@@ -1,0 +1,20 @@
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Text;
+global using System.Threading.Tasks;
+global using FluentNHibernate.Mapping;
+global using SBP_SLN4.Entiteti;
+global using NHibernate;
+global using FluentNHibernate.Cfg;
+global using FluentNHibernate.Cfg.Db;
+global using System.Configuration;
+global using System.Reflection;
+global using NHibernate.Criterion;
+global using NHibernate.Linq;
+global using System.ComponentModel;
+global using System.Data;
+global using System.Drawing;
+global using System.Windows.Forms;
+//global using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
