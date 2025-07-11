@@ -8,6 +8,7 @@ global using SBP_SLN4.Entiteti;
 global using NHibernate;
 global using FluentNHibernate.Cfg;
 global using FluentNHibernate.Cfg.Db;
+global using SBP_SLN4.Mapiranja;
 global using System.Configuration;
 global using System.Reflection;
 global using NHibernate.Criterion;
