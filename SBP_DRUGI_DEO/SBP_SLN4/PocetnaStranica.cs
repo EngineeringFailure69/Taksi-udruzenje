@@ -9,7 +9,8 @@ namespace SBP_SLN4
         }
         private void button4_Click(object sender, EventArgs e)
         {
-
+            VoziloPrikaz vozilaForm = new VoziloPrikaz();
+            vozilaForm.ShowDialog();
         }
         private void btnUpravlja_Click(object sender, EventArgs e)
         {
@@ -17,11 +18,9 @@ namespace SBP_SLN4
         }
         private void btnVoznja_Click(object sender, EventArgs e)
         {
-
         }
         private void btnZaposleni_Click(object sender, EventArgs e)
         {
-
         }
     }
 }

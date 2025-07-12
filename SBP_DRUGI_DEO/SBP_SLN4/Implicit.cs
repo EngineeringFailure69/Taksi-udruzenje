@@ -13,6 +13,7 @@ global using System.Configuration;
 global using System.Reflection;
 global using NHibernate.Criterion;
 global using NHibernate.Linq;
+global using SBP_SLN4.Forme;
 global using System.ComponentModel;
 global using System.Data;
 global using System.Drawing;
