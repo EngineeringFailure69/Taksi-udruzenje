@@ -18,9 +18,11 @@ namespace SBP_SLN4
         }
         private void btnVoznja_Click(object sender, EventArgs e)
         {
+
         }
         private void btnZaposleni_Click(object sender, EventArgs e)
         {
+
         }
     }
 }
