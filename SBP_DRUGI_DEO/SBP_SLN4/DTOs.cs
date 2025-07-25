@@ -1,5 +1,4 @@
-﻿
-namespace SBP_SLN4;
+﻿namespace SBP_SLN4;
 
 #region Voznja
 public class VoznjaBasic

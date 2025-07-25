@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace SBP_SLN4;
+﻿namespace SBP_SLN4;
 
 public class DTOManager
 {
@@ -324,6 +322,43 @@ public class DTOManager
 
         return ob;
     }
+    #endregion
+
+    #region Funkcije za prikupljanje podataka 
+
+    public static List<int> GetAllVozacIDsFromZaposleni() //f-ja za uzimanje svih vozac ID-jeva iz tabele zaposleni da bih
+    {                                                           //napunio combobox
+        List<int> osobaID = new List<int>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                // Izvršavamo upit koji dohvatava sve jedinstvene ID-ove vozaca iz tabele Zaposleni
+                var SviID = session.Query<Zaposleni>()
+                                             .Where(bt => bt.TipZaposlenog == "Vozac")
+                                             .Select(bt => bt.ID_Osobe)
+                                             .Distinct()
+                                             .ToList();
+
+                osobaID.AddRange(SviID);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return osobaID;
+    }
+
     #endregion
 
 }

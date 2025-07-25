@@ -1,5 +1,4 @@
-﻿
-namespace SBP_SLN4
+﻿namespace SBP_SLN4
 {
     public partial class PocetnaStranica : Form
     {
