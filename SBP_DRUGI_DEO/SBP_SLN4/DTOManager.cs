@@ -224,12 +224,7 @@ public class DTOManager
                     GodinaProizvodnje = ob.godinaProizvodnje,
                     DatumIstekaRegistracije = ob.DatIstekaReg,
                     RegistarskaOznaka = ob.RegOznaka,
-                    //Zaposleni = await session.LoadAsync<Zaposleni>(ob?.VlasnikId),
                     Boja=ob.boja
-                    //Vozilo = await session.LoadAsync<Vozilo>(ob.IdVozilo),
-                    //ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.IdVozac),
-                    //DatumOd = ob.DatOd,
-                    //DatumDo = ob.DatDo
                 };
 
                 if (ob.VlasnikId.HasValue)
@@ -357,6 +352,37 @@ public class DTOManager
         }
 
         return osobaID;
+    }
+    public static List<int> GetAllVoziloIDsFromVozilo() //f-ja za uzimanje svih vozilo ID-jeva iz tabele Vozilo da bih
+    {                                                           //napunio combobox
+        List<int> voziloID = new List<int>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                // Izvršavamo upit koji dohvatava sve jedinstvene ID-eve vozila iz tabele Vozilo
+                var SviID = session.Query<Vozilo>()
+                                             .Select(bt => bt.ID_Vozila)
+                                             .Distinct()
+                                             .ToList();
+
+                voziloID.AddRange(SviID);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return voziloID;
     }
 
     #endregion

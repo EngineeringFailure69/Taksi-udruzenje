@@ -44,11 +44,10 @@
                 string tip = rbLicno.Text;
                 if (rbLicno.Checked)
                 {
-                    //ob.VlasnikId = int.Parse(cmbBrTelMusterije.SelectedItem.ToString());
                     int izabraniVlasnikID;
                     if (!int.TryParse(cmbVlasnikID.SelectedValue.ToString(), out izabraniVlasnikID))
                     {
-                        MessageBox.Show("Odaberite važeći ID vozaca.");
+                        MessageBox.Show("Odaberite vazeci ID vozaca.");
                         return;
                     }
                     ob.VlasnikId = izabraniVlasnikID;

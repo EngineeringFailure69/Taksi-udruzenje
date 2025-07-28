@@ -1,4 +1,5 @@
-﻿namespace SBP_SLN4.Forme
+﻿
+namespace SBP_SLN4.Forme
 {
     public partial class IstorijaUpravljanja : Form
     {
@@ -28,7 +29,7 @@
             {
                 lwPrikaz.Items.Clear();
                 lwPrikaz.View = View.Details; // Koristimo detaljan prikaz
-                lwPrikaz.FullRowSelect = true; // Selektovanje cele redove
+                lwPrikaz.FullRowSelect = true; // Selektujem cele redove
                 lwPrikaz.GridLines = true;
 
                 lwPrikaz.Columns.Clear();
