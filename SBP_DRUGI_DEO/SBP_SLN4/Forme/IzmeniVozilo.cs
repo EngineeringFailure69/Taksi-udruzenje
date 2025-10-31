@@ -8,7 +8,6 @@
             InitializeComponent();
             tbTipVozila.Leave += tbTipVozila_Leave;
         }
-
         public IzmeniVozilo(VoziloBasic v) : this()
         {
             vozilo = v;
@@ -85,7 +84,6 @@
                 this.Close();
             }
         }
-
         private void tbTipVozila_TextChanged(object sender, EventArgs e)
         {
             if (tbTipVozila.Text == "Licno_Vozilo")
@@ -106,7 +104,6 @@
                 tbRegistarskaOznaka.Enabled = true;
             }
         }
-
         private void tbTipVozila_Leave(object sender, EventArgs e)
         {
             var validneVrednosti = new List<string> { "Licno_Vozilo", "Vozilo_Udruzenja" };

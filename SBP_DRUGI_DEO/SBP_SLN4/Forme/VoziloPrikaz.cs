@@ -6,7 +6,6 @@
         {
             InitializeComponent();
         }
-
         private void VoziloPrikaz_Load(object sender, EventArgs e)
         {
             popuniPodacima();
@@ -36,23 +35,19 @@
 
             lwPrikazVozila.Refresh();
         }
-
         private void lwPrikazVozila_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
-
         private void VoziloPrikaz_Load_1(object sender, EventArgs e)
         {
             popuniPodacima();
         }
-
         private void btnDodajVozilo_Click(object sender, EventArgs e)
         {
             DodajVozilo voziloForm = new DodajVozilo();
             voziloForm.ShowDialog();
         }
-
         private async void btnIzmeniVozilo_Click(object sender, EventArgs e)
         {
             if (lwPrikazVozila.SelectedItems.Count == 0)
@@ -76,13 +71,11 @@
                 }
             }
         }
-
         private void btnUpravljanja_Click(object sender, EventArgs e)
         {
             UpravljaPrikaz1 upravljaForm = new UpravljaPrikaz1();
             upravljaForm.ShowDialog();
         }
-
         private  void btnIzabrno_Click(object sender, EventArgs e)
         {
             if (lwPrikazVozila.SelectedItems.Count == 0)

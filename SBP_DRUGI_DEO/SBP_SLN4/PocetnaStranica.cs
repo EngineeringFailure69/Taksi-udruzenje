@@ -17,7 +17,8 @@
         }
         private void btnVoznja_Click(object sender, EventArgs e)
         {
-
+            VoznjaPrikaz voznjaForm = new VoznjaPrikaz();
+            voznjaForm.ShowDialog();
         }
         private void btnZaposleni_Click(object sender, EventArgs e)
         {

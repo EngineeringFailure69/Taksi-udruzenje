@@ -7,12 +7,10 @@
         {
             InitializeComponent();
         }
-
         private void UpravljaPrikaz_Load(object sender, EventArgs e)
         {
             PopulateInfos();
         }
-
         private void PopulateInfos() //funkcija za upis podataka u grid
         {
             dgwPrikaz.Rows.Clear();
@@ -38,13 +36,11 @@
 
             dgwPrikaz.Refresh();
         }
-
         private void btnUnesi_Click(object sender, EventArgs e)
         {
             DodajUpravlja dodajForm = new DodajUpravlja();
             dodajForm.ShowDialog();
         }
-
         private async void btnIzmeni_Click(object sender, EventArgs e)
         {
 

@@ -319,6 +319,62 @@ public class DTOManager
     }
     #endregion
 
+    #region Voznja
+    public static List<VoznjaPregled> GetVoznjaInfos()
+    {
+        List<VoznjaPregled> voznjaInfos = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<Voznja> voznje =
+                    from o in session.Query<Voznja>()
+                    select o;
+
+                foreach (Voznja o in voznje)
+                {
+                    voznjaInfos.Add(new VoznjaPregled(o.ID_Voznje, o.ZaposleniAdmin.ID_Osobe, o.ZaposleniVozac.ID_Osobe, o.Musterija.ID_Osobe,
+                        o.PocetnaStanica, o.KrajnjaStanica, o.VremePocetka, o.VremeKraja, o.BrTelNarucivanja, o.ZaposleniVozac.Lime, o.ZaposleniAdmin.Lime));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return voznjaInfos;
+    }
+    public static async Task obrisiVoznju(int id)
+    {
+        ISession? s = null;
+        try
+        {
+            s = DataLayer.GetSession();
+            Voznja o = s.Load<Voznja>(id);
+
+            s.Delete(o);
+            s.Flush();
+
+            s.Close();
+        }
+        catch (Exception ec)
+        {
+            MessageBox.Show(ec.Message);
+        }
+    }
+
+    #endregion
+
     #region Funkcije za prikupljanje podataka 
 
     public static List<int> GetAllVozacIDsFromZaposleni() //f-ja za uzimanje svih vozac ID-jeva iz tabele zaposleni da bih
