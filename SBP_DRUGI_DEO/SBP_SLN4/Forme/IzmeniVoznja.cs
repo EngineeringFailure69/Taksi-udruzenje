@@ -1,15 +1,15 @@
-﻿
-namespace SBP_SLN4.Forme
+﻿namespace SBP_SLN4.Forme
 {
     public partial class IzmeniVoznja : Form
     {
+        public VoznjaBasic? voznja;
         public IzmeniVoznja()
         {
             InitializeComponent();
         }
         public IzmeniVoznja(VoznjaBasic v) : this()
         {
-
+            voznja = v;
         }
         public void PostaviMaxLength()
         {

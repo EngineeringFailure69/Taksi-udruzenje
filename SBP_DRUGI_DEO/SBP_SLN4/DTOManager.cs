@@ -169,7 +169,6 @@ public class DTOManager
 
         return upravljanjaInfos;
     }
-
     #endregion
 
     #region Vozilo
@@ -372,11 +371,74 @@ public class DTOManager
             MessageBox.Show(ec.Message);
         }
     }
+    public static async Task<VoznjaBasic?> UpdateVoznjaBasic(VoznjaBasic? ob)
+    {
+        ISession? session = null;
 
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                Voznja o = await session.LoadAsync<Voznja>(ob.VoznjaId);
+                o.Musterija = await session.LoadAsync<Musterija>(ob.MusterijaId);
+                o.PocetnaStanica = ob.Pocetna_Stanica;
+                o.KrajnjaStanica = ob.Kranja_Stanica;
+                o.BrTelNarucivanja = ob.Br_Tel_Narucivanja;
+                o.ZaposleniAdmin = await session.LoadAsync<Zaposleni>(ob.AdminId);
+                o.VremeJavljanja = ob.Vreme_Javljanja;
+                o.BrTelPrimljenogPoziva = ob.Br_Tel_Prim_Poziva;
+                o.ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.VozacId);
+                o.VremePocetka = ob.Vreme_Pocetka;
+                o.VremeKraja = ob.Vreme_Kraja;
+
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+    public static async Task<VoznjaBasic> GetVoznjaBasic(int idvoznje)
+    {
+        VoznjaBasic ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                Voznja o = await session.LoadAsync<Voznja>(idvoznje);
+                ob = new VoznjaBasic(o.ID_Voznje, o.Musterija.ID_Osobe, o.PocetnaStanica, o.KrajnjaStanica, o.BrTelNarucivanja,
+                    o.ZaposleniAdmin.ID_Osobe, o.VremeJavljanja, o.BrTelPrimljenogPoziva, o.ZaposleniVozac.ID_Osobe,
+                    o.VremePocetka, o.VremeKraja);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
     #endregion
 
     #region Funkcije za prikupljanje podataka 
-
     public static List<int> GetAllVozacIDsFromZaposleni() //f-ja za uzimanje svih vozac ID-jeva iz tabele zaposleni da bih
     {                                                           //napunio combobox
         List<int> osobaID = new List<int>();
@@ -388,7 +450,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvršavamo upit koji dohvatava sve jedinstvene ID-ove vozaca iz tabele Zaposleni
+                // Izvrsavamo upit koji dohvatava sve jedinstvene ID-ove vozaca iz tabele Zaposleni
                 var SviID = session.Query<Zaposleni>()
                                              .Where(bt => bt.TipZaposlenog == "Vozac")
                                              .Select(bt => bt.ID_Osobe)
@@ -420,7 +482,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvršavamo upit koji dohvatava sve jedinstvene ID-eve vozila iz tabele Vozilo
+                // Izvrsavamo upit koji dohvatava sve jedinstvene ID-eve vozila iz tabele Vozilo
                 var SviID = session.Query<Vozilo>()
                                              .Select(bt => bt.ID_Vozila)
                                              .Distinct()
@@ -440,7 +502,6 @@ public class DTOManager
 
         return voziloID;
     }
-
     #endregion
 
 }

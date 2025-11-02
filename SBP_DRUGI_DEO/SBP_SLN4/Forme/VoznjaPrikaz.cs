@@ -49,8 +49,26 @@
         }
         private async void btnIzmeni_Click(object sender, EventArgs e)
         {
-            IzmeniVoznja izmeniVoznja = new IzmeniVoznja();
-            izmeniVoznja.ShowDialog();
+            if (lwVoznjaPrikaz.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Izaberite voznju cije podatke zelite da izmenite!");
+                return;
+            }
+
+            string? id = lwVoznjaPrikaz.SelectedItems[0].SubItems[0].Text;
+
+            if (int.TryParse(id, out int vId))
+            {
+                VoznjaBasic ob = await DTOManager.GetVoznjaBasic(vId);
+
+                IzmeniVoznja edbForm = new(ob);
+
+                if (edbForm.ShowDialog() == DialogResult.OK)
+                {
+                    await DTOManager.UpdateVoznjaBasic(edbForm.voznja);
+                    popuniPodacima();
+                }
+            }
         }
         private async void btnObrisi_Click(object sender, EventArgs e)
         {
