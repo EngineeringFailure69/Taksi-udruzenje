@@ -353,6 +353,68 @@ public class DTOManager
 
         return voznjaInfos;
     }
+    public static async Task dodajVoznju(VoznjaBasic ob)
+    {
+        ISession? session = null;
+        ITransaction? transaction = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                transaction = session.BeginTransaction();
+
+                // Proveravamo da li musterija postoji u bazi
+                Musterija musterija = await session.GetAsync<Musterija>(ob.MusterijaId);
+                if (musterija == null)
+                {
+                    MessageBox.Show($"Musterija with ID {ob.MusterijaId} ne postoji.");
+                    return;
+                }
+
+                // Povećavamo stavku BrKoriscenihVoznji za 1
+                musterija.BrKoriscenihVoznji += 1;
+
+                Voznja o = new Voznja
+                {
+                    Musterija = await session.LoadAsync<Musterija>(ob.MusterijaId),
+                    PocetnaStanica = ob.Pocetna_Stanica,
+                    KrajnjaStanica = ob.Kranja_Stanica,
+                    BrTelNarucivanja = ob.Br_Tel_Narucivanja,
+                    ZaposleniAdmin = await session.LoadAsync<Zaposleni>(ob.AdminId),
+                    VremeJavljanja = ob.Vreme_Javljanja,
+                    BrTelPrimljenogPoziva = ob.Br_Tel_Prim_Poziva,
+                    ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.VozacId),
+                    VremePocetka = ob.Vreme_Pocetka,
+                    VremeKraja = ob.Vreme_Kraja
+                };
+                // Čuvamo ažuriranu musteriju u bazi
+                await session.UpdateAsync(musterija);
+
+                await session.SaveAsync(o);
+                await transaction.CommitAsync();
+                await session.FlushAsync();
+            }
+            else
+            {
+                MessageBox.Show("Session or VoznjaBasic object is null.");
+            }
+        }
+        catch (Exception ex)
+        {
+            if (transaction != null)
+            {
+                await transaction.RollbackAsync();
+            }
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+    }
     public static async Task obrisiVoznju(int id)
     {
         ISession? s = null;
@@ -438,7 +500,39 @@ public class DTOManager
     }
     #endregion
 
-    #region Funkcije za prikupljanje podataka 
+    #region Funkcije za prikupljanje podataka
+    public static List<int> GetAllAdminIDsFromZaposleni() //f-ja za uzimanje svih admin ID-jeva iz tabele zaposleni da bih
+    {                                                           //napunio combobox
+        List<int> osobaID = new List<int>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                // Izvršavamo upit koji dohvatava sve jedinstvene ID-ove admin-a iz tabele Zaposleni
+                var SviID = session.Query<Zaposleni>()
+                                             .Where(bt => bt.TipZaposlenog == "Administrator")
+                                             .Select(bt => bt.ID_Osobe)
+                                             .Distinct()
+                                             .ToList();
+
+                osobaID.AddRange(SviID);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return osobaID;
+    }
     public static List<int> GetAllVozacIDsFromZaposleni() //f-ja za uzimanje svih vozac ID-jeva iz tabele zaposleni da bih
     {                                                           //napunio combobox
         List<int> osobaID = new List<int>();
@@ -470,6 +564,69 @@ public class DTOManager
         }
 
         return osobaID;
+    }
+    public static List<int> GetAllMusterijaIDsFromMusterija() //f-ja za uzimanje musterija ID-jeva iz tabele zaposleni da bih
+    {                                                           //napunio combobox
+        List<int> osobaID = new List<int>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                // Izvršavamo upit koji dohvatava sve jedinstvene ID-ove musterija iz tabele Musterija
+                var SviID = session.Query<Musterija>()
+                                             .Select(bt => bt.ID_Osobe)
+                                             .Distinct()
+                                             .ToList();
+
+                osobaID.AddRange(SviID);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return osobaID;
+    }
+    public static List<BrojeviTelefonaId> GetAllTelefoniZaMusterije(int idmusterije) //f-ja za uzimanje svih brojeva telefona za odredjenu 
+    {                                                           //musteriju kako bih napunio combobox
+        List<BrojeviTelefonaId> brojeviTelefona = new List<BrojeviTelefonaId>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                // Izvršavamo upit koji dohvatava sve brojeve telefona za određenu mušteriju
+                var telefoni = session.Query<BrojeviTelefona>()
+                                      .Where(bt => bt.BrojTelefona.Osoba.ID_Osobe == idmusterije)//bt => bt.Osoba.ID_Osobe == idmusterije)
+                                      .Select(bt => bt.BrojTelefona)
+                                      .Distinct()
+                                      .ToList();
+
+                brojeviTelefona.AddRange(telefoni);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return brojeviTelefona;
     }
     public static List<int> GetAllVoziloIDsFromVozilo() //f-ja za uzimanje svih vozilo ID-jeva iz tabele Vozilo da bih
     {                                                           //napunio combobox
