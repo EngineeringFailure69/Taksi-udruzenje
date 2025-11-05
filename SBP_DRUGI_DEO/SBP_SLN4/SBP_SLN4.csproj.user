@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Compile Update="Forme\BrojeviTelefonaPrikaz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\DodajBrojTelefona.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\DodajMusteriju.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forme\DodajUpravlja.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -8,6 +17,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forme\DodajVoznja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\DodajZaposleni.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forme\IstorijaUpravljanja.cs">
@@ -22,6 +34,18 @@
     <Compile Update="Forme\IzmeniVoznja.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forme\KategorijaDodaj.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\KategorijePrikaz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\MusterijaPrikaz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\OsobaPrikaz.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forme\UpravljaPrikaz1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -29,6 +53,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Forme\VoznjaPrikaz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forme\ZaposleniPrikaz.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="PocetnaStranica.cs">

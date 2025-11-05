@@ -22,7 +22,8 @@
         }
         private void btnZaposleni_Click(object sender, EventArgs e)
         {
-
+            OsobaPrikaz osobaForm = new OsobaPrikaz();
+            osobaForm.ShowDialog();
         }
     }
 }

@@ -374,7 +374,7 @@ public class DTOManager
                     return;
                 }
 
-                // Povećavamo stavku BrKoriscenihVoznji za 1
+                // Povecavam stavku BrKoriscenihVoznji za 1
                 musterija.BrKoriscenihVoznji += 1;
 
                 Voznja o = new Voznja
@@ -390,7 +390,7 @@ public class DTOManager
                     VremePocetka = ob.Vreme_Pocetka,
                     VremeKraja = ob.Vreme_Kraja
                 };
-                // Čuvamo ažuriranu musteriju u bazi
+                // Cuvam azuriranu musteriju u bazi
                 await session.UpdateAsync(musterija);
 
                 await session.SaveAsync(o);
@@ -500,6 +500,43 @@ public class DTOManager
     }
     #endregion
 
+    #region Osoba
+    public static List<OsobaPregled> GetOsobaInfos()
+    {
+        List<OsobaPregled> osobaInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<Osoba> osobe =
+                    from o in session.Query<Osoba>()
+                    select o;
+
+                foreach (Osoba o in osobe)
+                {
+                    osobaInfo.Add(new OsobaPregled(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return osobaInfo;
+    }
+
+    #endregion
+
     #region Funkcije za prikupljanje podataka
     public static List<int> GetAllAdminIDsFromZaposleni() //f-ja za uzimanje svih admin ID-jeva iz tabele zaposleni da bih
     {                                                           //napunio combobox
@@ -607,7 +644,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvršavamo upit koji dohvatava sve brojeve telefona za određenu mušteriju
+                // Izvrsavam upit koji dohvatava sve brojeve telefona za određenu musteriju
                 var telefoni = session.Query<BrojeviTelefona>()
                                       .Where(bt => bt.BrojTelefona.Osoba.ID_Osobe == idmusterije)//bt => bt.Osoba.ID_Osobe == idmusterije)
                                       .Select(bt => bt.BrojTelefona)
@@ -639,7 +676,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvrsavamo upit koji dohvatava sve jedinstvene ID-eve vozila iz tabele Vozilo
+                // Izvrsavam upit koji dohvatava sve jedinstvene ID-eve vozila iz tabele Vozilo
                 var SviID = session.Query<Vozilo>()
                                              .Select(bt => bt.ID_Vozila)
                                              .Distinct()

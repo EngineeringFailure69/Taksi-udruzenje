@@ -87,7 +87,7 @@
         {
             if (voznja == null)
             {
-                MessageBox.Show("Greška: Podaci o voznji nisu učitani.");
+                MessageBox.Show("Greska: Podaci o voznji nisu ucitani.");
                 return;
             }
             string poruka = "Da li zelite da izmenite ovu voznju";
