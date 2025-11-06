@@ -318,6 +318,109 @@ public class DTOManager
     }
     #endregion
 
+    #region Zaposleni
+
+    public static List<ZaposleniPregled> GetZaposleniInfos()
+    {
+        List<ZaposleniPregled> zaposleniInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<Zaposleni> zaposleni =
+                    from o in session.Query<Zaposleni>()
+                    select o;
+
+                foreach (Zaposleni o in zaposleni)
+                {
+                    zaposleniInfo.Add(new ZaposleniPregled(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.Lime, o.SrednjeSlovo,
+                        o.Prezime, o.JMBG, o.TipZaposlenog, o.BrojVozacke, o.StrucnaSprema));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return zaposleniInfo;
+    }
+    public static async Task<ZaposleniBasic> GetZaposleniBasic(int idzaposlenog)
+    {
+        ZaposleniBasic ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                Zaposleni o = await session.LoadAsync<Zaposleni>(idzaposlenog);
+                ob = new ZaposleniBasic(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.Lime, o.SrednjeSlovo, o.Prezime, o.JMBG,
+                    o.TipZaposlenog, o.BrojVozacke, o.StrucnaSprema);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+    public static async Task<ZaposleniBasic?> UpdateZaposleniBasic(ZaposleniBasic? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                Zaposleni o = await session.LoadAsync<Zaposleni>(ob.OsobaId);
+                o.Ulica = ob.ulica;
+                o.Broj = ob.broj;
+                o.TipOsobe = ob.Tip_Osobe;
+                o.Lime = ob.lime;
+                o.SrednjeSlovo = ob.SrSlovo;
+                o.Prezime = ob.prezime;
+                o.JMBG = ob.jmbg;
+                o.TipZaposlenog = ob.Tip_Zaposlenog;
+                o.BrojVozacke = ob.Broj_Vozacke;
+                o.StrucnaSprema = ob.Strucna_Sprema;
+
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+
+    #endregion
+
     #region Voznja
     public static List<VoznjaPregled> GetVoznjaInfos()
     {

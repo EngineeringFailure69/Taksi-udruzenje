@@ -94,7 +94,7 @@
                 // Prikazivanje poruke korisniku
                 MessageBox.Show("Dozvoljene vrednosti su 'Administrator' ili 'Vozac'.", "Nevalidan unos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                // Postavljanje fokusa nazad na `TextBox`
+                // Postavljanje fokusa nazad na textbox
                 tbTipZaposlenog.Focus();
 
                 // Sprecavanje prelaska na sledecu kontrolu
