@@ -11,7 +11,29 @@
 
         private async void btnDodaj_Click(object sender, EventArgs e)
         {
-            
+            string poruka = "Da li zelite da dodate novog zaposlenog?";
+            string title = "Pitanje";
+            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+            DialogResult result = MessageBox.Show(poruka, title, buttons);
+            ZaposleniBasicBrojevi ob = new ZaposleniBasicBrojevi();
+            if (result == DialogResult.OK)
+            {
+                if (!ProveriPraznaPolja()) return;
+                ob.ulica = tbUlica.Text;
+                ob.broj = tbBroj.Text;
+                ob.lime = tbLime.Text;
+                ob.SrSlovo = tbSrSlovo.Text;
+                ob.prezime = tbPrezime.Text;
+                ob.jmbg = tbJMBG.Text;
+                ob.Tip_Zaposlenog = tbTipZaposlenog.Text;
+                ob.Broj_Vozacke = tbBrVozacke.Text;
+                ob.Strucna_Sprema = tbStrucnaSprema.Text;
+                ob.BrojTelefona = tbTelefon.Text;
+
+                await DTOManager.dodajZaposlenog(ob);
+                MessageBox.Show("Uspesno ste dodali novog zaposlenog!");
+                this.Close();
+            }
         }
 
         public void PostaviMaxLength()

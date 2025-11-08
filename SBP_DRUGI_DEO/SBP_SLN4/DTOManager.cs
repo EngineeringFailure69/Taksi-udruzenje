@@ -418,6 +418,62 @@ public class DTOManager
 
         return ob;
     }
+    public static async Task dodajZaposlenog(ZaposleniBasicBrojevi ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                // Kreiramo novog zaposlenog
+                Zaposleni o = new Zaposleni
+                {
+                    Ulica = ob.ulica,
+                    Broj = ob.broj,
+                    TipOsobe = ob.Tip_Osobe = "Zaposleni",
+                    Lime = ob.lime,
+                    SrednjeSlovo = ob.SrSlovo,
+                    Prezime = ob.prezime,
+                    JMBG = ob.jmbg,
+                    TipZaposlenog = ob.Tip_Zaposlenog,
+                    BrojVozacke = ob.Broj_Vozacke,
+                    StrucnaSprema = ob.Strucna_Sprema,
+                };
+
+                // Sačuvamo novu musteriju
+                await session.SaveAsync(o);
+                await session.FlushAsync();
+
+                // Kreiramo i sačuvamo novi broj telefona za musteriju
+                BrojeviTelefona brojTelefona = new BrojeviTelefona
+                {
+                    BrojTelefona = new BrojeviTelefonaId
+                    {
+                        Osoba = o,
+                        BrojTelefona = ob.BrojTelefona
+                    }
+                };
+
+                await session.SaveAsync(brojTelefona);
+                await session.FlushAsync();
+            }
+            else
+            {
+                MessageBox.Show("Session or ZaposleniBasicBrojevi object is null.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+    }
 
     #endregion
 
