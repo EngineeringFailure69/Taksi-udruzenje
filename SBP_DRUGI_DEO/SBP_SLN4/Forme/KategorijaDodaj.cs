@@ -1,5 +1,4 @@
-﻿
-namespace SBP_SLN4.Forme
+﻿namespace SBP_SLN4.Forme
 {
     public partial class KategorijaDodaj : Form
     {

@@ -169,6 +169,7 @@ public class DTOManager
 
         return upravljanjaInfos;
     }
+
     #endregion
 
     #region Vozilo
@@ -316,6 +317,7 @@ public class DTOManager
 
         return ob;
     }
+
     #endregion
 
     #region Zaposleni
@@ -443,11 +445,11 @@ public class DTOManager
                     StrucnaSprema = ob.Strucna_Sprema,
                 };
 
-                // Sačuvamo novu musteriju
+                // Sacuvam novu musteriju
                 await session.SaveAsync(o);
                 await session.FlushAsync();
 
-                // Kreiramo i sačuvamo novi broj telefona za musteriju
+                // Kreiram i sacuvam novi broj telefona za musteriju
                 BrojeviTelefona brojTelefona = new BrojeviTelefona
                 {
                     BrojTelefona = new BrojeviTelefonaId
@@ -525,7 +527,6 @@ public class DTOManager
             {
                 transaction = session.BeginTransaction();
 
-                // Proveravamo da li musterija postoji u bazi
                 Musterija musterija = await session.GetAsync<Musterija>(ob.MusterijaId);
                 if (musterija == null)
                 {
@@ -533,7 +534,6 @@ public class DTOManager
                     return;
                 }
 
-                // Povecavam stavku BrKoriscenihVoznji za 1
                 musterija.BrKoriscenihVoznji += 1;
 
                 Voznja o = new Voznja
@@ -549,7 +549,7 @@ public class DTOManager
                     VremePocetka = ob.Vreme_Pocetka,
                     VremeKraja = ob.Vreme_Kraja
                 };
-                // Cuvam azuriranu musteriju u bazi
+
                 await session.UpdateAsync(musterija);
 
                 await session.SaveAsync(o);
@@ -657,6 +657,7 @@ public class DTOManager
 
         return ob;
     }
+
     #endregion
 
     #region Osoba
@@ -696,6 +697,82 @@ public class DTOManager
 
     #endregion
 
+    #region Kategorije
+
+    public static List<KategorijePregled> GetKategorijeInfos()
+    {
+        List<KategorijePregled> kategorijeInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<Kategorije> kategorije =
+                    from o in session.Query<Kategorije>()
+                    select o;
+
+                foreach (Kategorije o in kategorije)
+                {
+                    kategorijeInfo.Add(new KategorijePregled(o.Kategorija));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return kategorijeInfo;
+    }
+    public static async Task obrisiKategoriju(int id, string kategorija)
+    {
+        ISession? s = null;
+        try
+        {
+            s = DataLayer.GetSession();
+
+            if (s != null)
+            {
+                // Kreiram kompozitni kljuc
+                KategorijaId kategorijaId = new KategorijaId
+                {
+                    Zaposleni = s.Load<Zaposleni>(id),
+                    Kategorija = kategorija
+                };
+
+                Kategorije? o = await s.GetAsync<Kategorije>(kategorijaId);
+
+                if (o != null)
+                {
+                    await s.DeleteAsync(o);
+                    await s.FlushAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Kategorija nije pronadjena.");
+                }
+            }
+        }
+        catch (Exception ec)
+        {
+            MessageBox.Show(ec.Message);
+        }
+        finally
+        {
+            s?.Close(); 
+        }
+    }
+
+    #endregion
+
     #region Funkcije za prikupljanje podataka
     public static List<int> GetAllAdminIDsFromZaposleni() //f-ja za uzimanje svih admin ID-jeva iz tabele zaposleni da bih
     {                                                           //napunio combobox
@@ -708,7 +785,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvršavamo upit koji dohvatava sve jedinstvene ID-ove admin-a iz tabele Zaposleni
+                // Izvrsavam upit koji dohvatava sve jedinstvene ID-eve admin-a iz tabele Zaposleni
                 var SviID = session.Query<Zaposleni>()
                                              .Where(bt => bt.TipZaposlenog == "Administrator")
                                              .Select(bt => bt.ID_Osobe)
@@ -740,7 +817,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvrsavamo upit koji dohvatava sve jedinstvene ID-ove vozaca iz tabele Zaposleni
+                // Izvrsavam upit koji dohvatava sve jedinstvene ID-eve vozaca iz tabele Zaposleni
                 var SviID = session.Query<Zaposleni>()
                                              .Where(bt => bt.TipZaposlenog == "Vozac")
                                              .Select(bt => bt.ID_Osobe)
@@ -772,7 +849,7 @@ public class DTOManager
 
             if (session != null)
             {
-                // Izvršavamo upit koji dohvatava sve jedinstvene ID-ove musterija iz tabele Musterija
+                // Izvrsavam upit koji dohvatava sve jedinstvene ID-eve musterija iz tabele Musterija
                 var SviID = session.Query<Musterija>()
                                              .Select(bt => bt.ID_Osobe)
                                              .Distinct()
@@ -805,7 +882,7 @@ public class DTOManager
             {
                 // Izvrsavam upit koji dohvatava sve brojeve telefona za određenu musteriju
                 var telefoni = session.Query<BrojeviTelefona>()
-                                      .Where(bt => bt.BrojTelefona.Osoba.ID_Osobe == idmusterije)//bt => bt.Osoba.ID_Osobe == idmusterije)
+                                      .Where(bt => bt.BrojTelefona.Osoba.ID_Osobe == idmusterije)
                                       .Select(bt => bt.BrojTelefona)
                                       .Distinct()
                                       .ToList();
@@ -855,6 +932,7 @@ public class DTOManager
 
         return voziloID;
     }
+
     #endregion
 
 }
