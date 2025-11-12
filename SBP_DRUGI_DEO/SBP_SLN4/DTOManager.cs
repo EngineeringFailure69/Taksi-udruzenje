@@ -732,6 +732,43 @@ public class DTOManager
 
         return kategorijeInfo;
     }
+    public static async Task dodajKategoriju(KategorijeBasic ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                // Kreiram novi objekat Kategorija koristeci podatke iz objekta KategorijaBasic
+                Kategorije novaKategorija = new Kategorije
+                {
+                    Kategorija = new KategorijaId
+                    {
+                        Zaposleni = session.Load<Zaposleni>(ob.Id.Zaposleni.OsobaId), // Ucitavam zaposlenog iz baze
+                        Kategorija = ob.Id.Kategorija // Postavljam kategoriju
+                    }
+                };
+
+                await session.SaveAsync(novaKategorija);
+                await session.FlushAsync();
+            }
+            else
+            {
+                MessageBox.Show("Session or KategorijaBasic object is null.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+    }
     public static async Task obrisiKategoriju(int id, string kategorija)
     {
         ISession? s = null;
