@@ -479,6 +479,58 @@ public class DTOManager
 
     #endregion
 
+    #region Musterija
+
+    public static async Task dodajMusteriju(MusterijaBasicBrojevi ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                Musterija o = new Musterija
+                {
+                    Ulica = ob.ulica,
+                    Broj = ob.broj,
+                    TipOsobe = "Musterija",
+                    BrKoriscenihVoznji = ob.Br_Koriscenih_Voznji
+                };
+
+                await session.SaveAsync(o);
+                await session.FlushAsync();
+
+                BrojeviTelefona brojTelefona = new BrojeviTelefona
+                {
+                    BrojTelefona = new BrojeviTelefonaId
+                    {
+                        Osoba = o,
+                        BrojTelefona = ob.BrojTelefona
+                    }
+                };
+
+                await session.SaveAsync(brojTelefona);
+                await session.FlushAsync();
+            }
+            else
+            {
+                MessageBox.Show("Session or MusterijaBasicBrojevi object is null.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+    }
+
+    #endregion
+
     #region Voznja
     public static List<VoznjaPregled> GetVoznjaInfos()
     {

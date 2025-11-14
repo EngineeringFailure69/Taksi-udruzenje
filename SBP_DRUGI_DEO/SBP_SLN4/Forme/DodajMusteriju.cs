@@ -39,7 +39,23 @@
 
         private async void btndodaj_Click(object sender, EventArgs e)
         {
-            
+            string poruka = "Da li zelite da dodate novu musteriju?";
+            string title = "Pitanje";
+            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+            DialogResult result = MessageBox.Show(poruka, title, buttons);
+            MusterijaBasicBrojevi ob = new MusterijaBasicBrojevi();
+            if (result == DialogResult.OK)
+            {
+                if (!ProveriPraznaPolja()) return;
+                ob.ulica = tbUlica.Text;
+                ob.broj = tbBroj.Text;
+                ob.Br_Koriscenih_Voznji = int.Parse(tbBrVoznji.Text);
+                ob.BrojTelefona = tbBrojTelefona.Text;
+
+                await DTOManager.dodajMusteriju(ob);
+                MessageBox.Show("Uspesno ste dodali novu musteriju!");
+                this.Close();
+            }
         }
 
         private void DodajMusteriju_Load(object sender, EventArgs e)
