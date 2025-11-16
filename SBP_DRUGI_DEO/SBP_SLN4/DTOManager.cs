@@ -481,6 +481,47 @@ public class DTOManager
 
     #region Musterija
 
+    public static List<MusterijaPregled> GetMusterijaInfos()
+    {
+        List<MusterijaPregled> musterijaInfo = new List<MusterijaPregled>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<Musterija> musterije = session.Query<Musterija>().ToList();
+
+                foreach (Musterija m in musterije)
+                {
+                    var brojeviTelefona = session.Query<BrojeviTelefona>()
+                                                 .Where(bt => bt.BrojTelefona.Osoba.ID_Osobe == m.ID_Osobe)
+                                                 .Select(bt => new BrojeviTelefonaPregledMusterija(bt.BrojTelefona.BrojTelefona.ToString()))
+                                                 .ToList();
+
+                    musterijaInfo.Add(new MusterijaPregled(
+                        m.ID_Osobe,
+                        m.Ulica,
+                        m.Broj,
+                        m.TipOsobe,
+                        m.BrKoriscenihVoznji,
+                        brojeviTelefona));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return musterijaInfo;
+    }
     public static async Task dodajMusteriju(MusterijaBasicBrojevi ob)
     {
         ISession? session = null;
