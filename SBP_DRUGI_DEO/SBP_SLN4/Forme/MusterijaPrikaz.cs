@@ -82,7 +82,14 @@
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            List<MusterijaPregled> ob = DTOManager.GetMusterijaPopustInfos();
+
+            MusterijePopusti edbForm = new(ob);
+
+            if (edbForm.ShowDialog() == DialogResult.OK)
+            {
+                edbForm.popuniPodacima();
+            }
         }
     }
 }

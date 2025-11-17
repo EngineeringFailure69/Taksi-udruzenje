@@ -49,6 +49,9 @@
     <Compile Update="Forme\MusterijaPrikaz.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forme\MusterijePopusti.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forme\OsobaPrikaz.cs">
       <SubType>Form</SubType>
     </Compile>
