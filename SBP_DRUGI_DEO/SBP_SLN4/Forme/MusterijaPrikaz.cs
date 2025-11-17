@@ -58,7 +58,26 @@
 
         private async void btnIzmeniMusteriju_Click(object sender, EventArgs e)
         {
-            
+            if (lwPrikaz.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Izaberite musteriju cije podatke zelite da izmenite!");
+                return;
+            }
+
+            string? id = lwPrikaz.SelectedItems[0].SubItems[0].Text;
+
+            if (int.TryParse(id, out int mId))
+            {
+                MusterijaBasic ob = await DTOManager.GetMusterijaBasic(mId);
+
+                IzmeniMusteriju edbForm = new(ob);
+
+                if (edbForm.ShowDialog() == DialogResult.OK)
+                {
+                    await DTOManager.UpdateMusterijaBasic(edbForm.musterija);
+                    popuniPodacima();
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

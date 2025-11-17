@@ -25,6 +25,9 @@
     <Compile Update="Forme\IstorijaUpravljanja.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Forme\IzmeniMusteriju.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forme\IzmeniUpravlja.cs">
       <SubType>Form</SubType>
     </Compile>

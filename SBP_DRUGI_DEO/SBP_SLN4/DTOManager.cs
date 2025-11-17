@@ -522,6 +522,63 @@ public class DTOManager
 
         return musterijaInfo;
     }
+    public static async Task<MusterijaBasic> GetMusterijaBasic(int idmusterije)
+    {
+        MusterijaBasic ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                Musterija o = await session.LoadAsync<Musterija>(idmusterije);
+                ob = new MusterijaBasic(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.BrKoriscenihVoznji);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+    public static async Task<MusterijaBasic?> UpdateMusterijaBasic(MusterijaBasic? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                Musterija o = await session.LoadAsync<Musterija>(ob.OsobaId);
+                o.Ulica = ob.ulica;
+                o.Broj = ob.broj;
+                o.TipOsobe = ob.Tip_Osobe;
+                o.BrKoriscenihVoznji = ob.Br_Koriscenih_Voznji;
+
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
     public static async Task dodajMusteriju(MusterijaBasicBrojevi ob)
     {
         ISession? session = null;
