@@ -890,6 +890,44 @@ public class DTOManager
 
     #endregion
 
+    #region BrojeviTelefona
+
+    public static List<BrojeviTelefonaPregled> GetBrojInfos()
+    {
+        List<BrojeviTelefonaPregled> brojInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<BrojeviTelefona> brojevi =
+                    from o in session.Query<BrojeviTelefona>()
+                    select o;
+
+                foreach (BrojeviTelefona o in brojevi)
+                {
+                    brojInfo.Add(new BrojeviTelefonaPregled(o.BrojTelefona));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return brojInfo;
+    }
+
+    #endregion
+
     #region Kategorije
 
     public static List<KategorijePregled> GetKategorijeInfos()
