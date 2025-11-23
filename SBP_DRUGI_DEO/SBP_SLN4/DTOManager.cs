@@ -430,7 +430,6 @@ public class DTOManager
 
             if (session != null && ob != null)
             {
-                // Kreiramo novog zaposlenog
                 Zaposleni o = new Zaposleni
                 {
                     Ulica = ob.ulica,
@@ -445,7 +444,6 @@ public class DTOManager
                     StrucnaSprema = ob.Strucna_Sprema,
                 };
 
-                // Sacuvam novu musteriju
                 await session.SaveAsync(o);
                 await session.FlushAsync();
 
@@ -723,7 +721,7 @@ public class DTOManager
                 Musterija musterija = await session.GetAsync<Musterija>(ob.MusterijaId);
                 if (musterija == null)
                 {
-                    MessageBox.Show($"Musterija with ID {ob.MusterijaId} ne postoji.");
+                    MessageBox.Show($"Musterija sa ID {ob.MusterijaId} ne postoji.");
                     return;
                 }
 
@@ -924,6 +922,45 @@ public class DTOManager
         }
 
         return brojInfo;
+    }
+    public static async Task obrisiBroj(int id, string broj)
+    {
+        ISession? s = null;
+        try
+        {
+            s = DataLayer.GetSession(); 
+
+            if (s != null)
+            {
+                // Kreiram kompozitni kljuc
+                BrojeviTelefonaId brojId = new BrojeviTelefonaId
+                {
+                    Osoba = s.Load<Osoba>(id),
+                    BrojTelefona = broj
+                };
+
+                // Pronalazim entitet koristeci kompozitni kljuc
+                BrojeviTelefona? o = await s.GetAsync<BrojeviTelefona>(brojId);
+
+                if (o != null)
+                {
+                    await s.DeleteAsync(o);
+                    await s.FlushAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Broj telefona nije pronadjen.");
+                }
+            }
+        }
+        catch (Exception ec)
+        {
+            MessageBox.Show(ec.Message);
+        }
+        finally
+        {
+            s?.Close(); 
+        }
     }
 
     #endregion

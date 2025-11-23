@@ -34,7 +34,25 @@
 
         private async void btnObrisi_Click(object sender, EventArgs e)
         {
-            
+            if (lwPrikaz.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Izaberite broj koji zelite da obrisete!");
+                return;
+            }
+
+            int idosobe = Int32.Parse(lwPrikaz.SelectedItems[0].SubItems[0].Text);
+            string broj_telefona = lwPrikaz.SelectedItems[0].SubItems[1].Text;
+            string poruka = "Da li zelite da obrisete izabrani broj?";
+            string title = "Pitanje";
+            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+            DialogResult result = MessageBox.Show(poruka, title, buttons);
+
+            if (result == DialogResult.OK)
+            {
+                await DTOManager.obrisiBroj(idosobe, broj_telefona);
+                MessageBox.Show("Brisanje broja telefona je uspesno obavljeno!");
+                this.popuniPodacima();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
