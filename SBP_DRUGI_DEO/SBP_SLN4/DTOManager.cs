@@ -962,6 +962,42 @@ public class DTOManager
             s?.Close();
         }
     }
+    public static async Task dodajBroj(BrojeviTelefonaBasic ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                BrojeviTelefona noviBroj = new BrojeviTelefona
+                {
+                    BrojTelefona = new BrojeviTelefonaId
+                    {
+                        Osoba = session.Load<Osoba>(ob.Id.Osoba.OsobaId),
+                        BrojTelefona = ob.Id.BrTel 
+                    }
+                };
+
+                await session.SaveAsync(noviBroj);
+                await session.FlushAsync();
+            }
+            else
+            {
+                MessageBox.Show("Session or BrojeviTelefonaBasic object is null.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+    }
 
     #endregion
 

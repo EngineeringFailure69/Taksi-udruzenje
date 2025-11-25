@@ -30,9 +30,37 @@
 
         private async void btnDodaj_Click(object sender, EventArgs e)
         {
-            
-        }
+            string poruka = "Da li zelite da dodate novi broj telefona?";
+            string title = "Pitanje";
+            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+            DialogResult result = MessageBox.Show(poruka, title, buttons);
+            if (result == DialogResult.OK)
+            {
+                if (!ProveriPraznaPolja()) return;
+                int izabraniID;
+                if (!int.TryParse(cmbIdOsobe.SelectedValue.ToString(), out izabraniID))
+                {
+                    MessageBox.Show("Odaberite vazeci ID osobe.");
+                    return;
+                }
 
+                BrojeviTelefonaBasic ob = new BrojeviTelefonaBasic
+                {
+                    Id = new BrojeviTelefonaIdBasic
+                    {
+                        Osoba = new OsobaBasic
+                        {
+                            OsobaId = izabraniID
+                        },
+                        BrTel = tbBroj.Text
+                    }
+                };
+
+                await DTOManager.dodajBroj(ob);
+                MessageBox.Show("Uspesno ste dodali novi broj telefona!");
+                this.Close();
+            }
+        }
         private void cmbIdOsobe_SelectedIndexChanged(object sender, EventArgs e)
         {
 
