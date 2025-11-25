@@ -928,7 +928,7 @@ public class DTOManager
         ISession? s = null;
         try
         {
-            s = DataLayer.GetSession(); 
+            s = DataLayer.GetSession();
 
             if (s != null)
             {
@@ -959,7 +959,7 @@ public class DTOManager
         }
         finally
         {
-            s?.Close(); 
+            s?.Close();
         }
     }
 
@@ -1237,7 +1237,36 @@ public class DTOManager
 
         return voziloID;
     }
+    public static List<int> GetAllOsobaIDsFromBrojeviTelefona() //f-ja za uzimanje svih ID-jeva iz tabele brojevi telefona da bih
+    {                                                           //napunio combobox
+        List<int> osobaID = new List<int>();
+        ISession? session = null;
 
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                var SviID = session.Query<Osoba>()
+                                             .Select(bt => bt.ID_Osobe)
+                                             .Distinct()
+                                             .ToList();
+
+                osobaID.AddRange(SviID);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return osobaID;
+    }
     #endregion
 
 }

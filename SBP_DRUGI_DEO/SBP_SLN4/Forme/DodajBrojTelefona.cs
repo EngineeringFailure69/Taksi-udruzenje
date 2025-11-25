@@ -9,7 +9,10 @@
         }
         private void DodajBrojTelefona_Load(object sender, EventArgs e)
         {
-            
+            List<int> osobaId = DTOManager.GetAllOsobaIDsFromBrojeviTelefona();
+            cmbIdOsobe.DataSource = osobaId;
+            cmbIdOsobe.DropDownStyle = ComboBoxStyle.DropDownList;
+            PostaviMaxLength();
         }
         public void PostaviMaxLength()
         {
