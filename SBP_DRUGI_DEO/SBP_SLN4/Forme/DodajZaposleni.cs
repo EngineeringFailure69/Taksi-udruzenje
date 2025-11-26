@@ -8,7 +8,6 @@
             PostaviMaxLength();
             tbTipZaposlenog.Validating += tbTipZaposlenog_Validating;
         }
-
         private async void btnDodaj_Click(object sender, EventArgs e)
         {
             string poruka = "Da li zelite da dodate novog zaposlenog?";
@@ -35,13 +34,11 @@
                 this.Close();
             }
         }
-
         public void PostaviMaxLength()
         {
             tbTelefon.MaxLength = 10;
             tbJMBG.MaxLength = 13;
         }
-
         public bool ProveriPraznaPolja()
         {
             if (string.IsNullOrWhiteSpace(tbUlica.Text))
@@ -91,7 +88,6 @@
             tbTipZaposlenog.TextChanged += new EventHandler(tbTipZaposlenog_TextChanged);
             PostaviMaxLength();
         }
-
         private void tbTipZaposlenog_TextChanged(object sender, EventArgs e)
         {
             if (tbTipZaposlenog.Text == "Vozac")
@@ -105,7 +101,6 @@
                 tbStrucnaSprema.Enabled = true;
             }
         }
-
         private void tbTipZaposlenog_Validating(object sender, CancelEventArgs e)
         {
             var validneVrednosti = new List<string> { "Administrator", "Vozac" };

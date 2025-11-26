@@ -9,7 +9,6 @@
             rbUdruzenje.CheckedChanged += new EventHandler(rbUdruzenje_CheckedChanged);
             rbLicno.CheckedChanged += new EventHandler(rbLicno_CheckedChanged);
         }
-
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -28,7 +27,6 @@
             }
             return true;
         }
-
         private async void btnVozilo_Click(object sender, EventArgs e)
         {
             string poruka = "Da li zelite da dodate novo vozilo?";
@@ -72,7 +70,6 @@
                 this.Close();
             }
         }
-
         private void rbUdruzenje_CheckedChanged(object sender, EventArgs e)
         {
             if (rbUdruzenje.Checked)
@@ -84,7 +81,6 @@
                 tbRegistracija.Enabled = true;
                 tbTablice.Enabled = true;
         }
-
         private void rbLicno_CheckedChanged(object sender, EventArgs e)
         {
             if (rbLicno.Checked)

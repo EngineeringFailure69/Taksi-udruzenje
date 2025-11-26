@@ -7,7 +7,6 @@
             InitializeComponent();
             PostaviMaxLength();
         }
-
         public void PostaviMaxLength()
         {
             tbBrojTelefona.MaxLength = 10;
@@ -36,7 +35,6 @@
             }
             return true;
         }
-
         private async void btndodaj_Click(object sender, EventArgs e)
         {
             string poruka = "Da li zelite da dodate novu musteriju?";
@@ -57,7 +55,6 @@
                 this.Close();
             }
         }
-
         private void DodajMusteriju_Load(object sender, EventArgs e)
         {
             PostaviMaxLength();

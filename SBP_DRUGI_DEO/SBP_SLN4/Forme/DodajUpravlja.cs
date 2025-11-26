@@ -6,7 +6,6 @@
         {
             InitializeComponent();
         }
-
         public bool ProveriPraznjaPolja() 
         {
             if (string.IsNullOrWhiteSpace(tbDatumOd.Text)) 
@@ -51,7 +50,6 @@
                 this.Close();
             }
         }
-
         private void DodajUpravlja_Load(object sender, EventArgs e)
         {
             //Cmb VozacID
