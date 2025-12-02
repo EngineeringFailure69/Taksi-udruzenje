@@ -7,7 +7,7 @@
         {
             InitializeComponent();
         }
-        public IzmeniUpravlja(UpravljaBasic ob) : this() //Za izmenu podataka
+        public IzmeniUpravlja(UpravljaBasic ob) : this() 
         {
             upravljaBasic = ob;
             PopulateData();

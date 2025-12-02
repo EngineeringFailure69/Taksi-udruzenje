@@ -15,8 +15,8 @@
         public void popuniPodacima()
         {
             lwPrikaz.Items.Clear();
-            lwPrikaz.View = View.Details; // Koristimo detaljan prikaz
-            lwPrikaz.FullRowSelect = true; // Selektovanje cele redove
+            lwPrikaz.View = View.Details; 
+            lwPrikaz.FullRowSelect = true; 
             lwPrikaz.GridLines = true;
             List<ZaposleniPregled> podaci = DTOManager.GetZaposleniInfos();
 

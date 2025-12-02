@@ -108,16 +108,10 @@
         {
             var validneVrednosti = new List<string> { "Licno_Vozilo", "Vozilo_Udruzenja" };
 
-            // Provera da li unos nije validan
             if (!validneVrednosti.Contains(tbTipVozila.Text))
             {
-                // Prikazivanje poruke korisniku
                 MessageBox.Show("Dozvoljene vrednosti su 'Licno_Vozilo' ili 'Vozilo_Udruzenja'.", "Nevalidan unos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                // Postavljanje fokusa nazad na `TextBox`
                 tbTipVozila.Focus();
-
-                // Brisanje nevalidnog unosa
                 tbTipVozila.Text = string.Empty;
             }
         }

@@ -151,17 +151,10 @@
         private void tbTipZaposlenog_Leave(object sender, EventArgs e)
         {
             var validneVrednosti = new List<string> { "Administrator", "Vozac" };
-
-            // Provera da li unos nije validan
             if (!validneVrednosti.Contains(tbTipZaposlenog.Text))
             {
-                // Prikazivanje poruke korisniku
                 MessageBox.Show("Dozvoljene vrednosti su 'Administrator' ili 'Vozac'.", "Nevalidan unos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                // Postavljanje fokusa nazad na textbox
                 tbTipZaposlenog.Focus();
-
-                // Brisanje nevalidnog unosa
                 tbTipZaposlenog.Text = string.Empty;
             }
         }

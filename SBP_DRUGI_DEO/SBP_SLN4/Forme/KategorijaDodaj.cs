@@ -9,7 +9,6 @@
 
         private void KategorijaDodaj_Load(object sender, EventArgs e)
         {
-            //Cmb VozacID
             List<int> vozacId = DTOManager.GetAllVozacIDsFromZaposleni();
             cmbIdVozaca.DataSource = vozacId;
             cmbIdVozaca.DropDownStyle = ComboBoxStyle.DropDownList;

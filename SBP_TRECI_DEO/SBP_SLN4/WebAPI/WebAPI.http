@@ -1,0 +1,351 @@
+@WebAPI_HostAddress = https://localhost:7261
+@osobaId = 93 
+@osobaId2 = 93
+@osobaId3 = 94
+@upravljaId=3
+@voziloId=30
+@voznjaId=25
+@zaposleniId=54
+@voznjaId2=85
+
+### 
+
+POST {{WebAPI_HostAddress}}/brojevitelefona/DodajBrojTelefona
+Content-Type: application/json
+
+{
+  "id": {
+    "osoba": {
+      "osobaId":{{osobaId}} ,
+      "ulica": "string",
+      "broj": "string",
+      "tip_Osobe": "string"
+    },
+    "brTel": "1313131316"
+  }
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/zaposleni/DodajZaposlenog
+Content-Type: application/json
+
+{
+  "ulica": "Novosadska",
+  "broj": "22",
+  "tip_Osobe": "string",
+  "lime": "Stamen",
+  "srSlovo": "S",
+  "prezime": "Stanic",
+  "jmbg": "1313131313132",
+  "tip_Zaposlenog": "Vozac",
+  "broj_Vozacke": "9999999995",
+  "brojTelefona": "1313131312"
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/musterija/DodajMusteriju
+Content-Type: application/json
+
+{
+  "ulica": "Kenza Mihajla",
+  "broj": "33",
+  "tip_Osobe": "string",
+  "br_Koriscenih_Voznji": 1,
+  "brojTelefona": "1313131317"
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/upravlja/DodajUpravljanje
+Content-Type: application/json
+
+{
+  "idVozilo": 7,
+  "idVozac": 33,
+  "datOd": "2024-07-16T16:42:37.150Z",
+  "datDo": "2024-08-16T16:42:37.150Z"
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/kategorija/DodajKategoriju
+Content-Type: application/json
+
+{
+  "id": {
+    "zaposleni": {
+      "osobaId": {{osobaId2}},
+      "ulica": "string",
+      "broj": "string",
+      "tip_Osobe": "string",
+      "lime": "string",
+      "srSlovo": "string",
+      "prezime": "string",
+      "jmbg": "string",
+      "tip_Zaposlenog": "string",
+      "broj_Vozacke": "string",
+      "strucna_Sprema": "string",
+      "brojTelefona": "string"
+    },
+    "kategorija": "B1"
+  }
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/vozilo/DodajVozilo
+Content-Type: application/json
+
+{
+  "marka": "Golf",
+  "tip": "Hecbek",
+  "tipVozila": "Licno_Vozilo",
+  "vlasnikId": 71,
+  "boja": "Narandzasta"
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/voznja/DodajVoznju
+Content-Type: application/json
+
+{
+  "musterijaId": 91,
+  "pocetna_Stanica": "Zeleznicka stanica",
+  "kranja_Stanica": "Autobuska stanica",
+  "br_Tel_Narucivanja": "1313131315",
+  "adminId": 31,
+  "vreme_Javljanja": "2024-06-26T13:49:33.684Z",
+  "br_Tel_Prim_Poziva": "0000001111",
+  "vozacId": 71,
+  "vreme_Pocetka": "2024-06-26T13:58:33.684Z",
+  "vreme_Kraja": "2024-06-26T14:37:33.684Z"
+}
+
+###
+
+POST {{WebAPI_HostAddress}}/zaposleni/DodajZaposlenog
+Content-Type: application/json
+
+{
+  "ulica": "Kragujevacka",
+  "broj": "23",
+  "tip_Osobe": "string",
+  "lime": "Marjan",
+  "srSlovo": "M",
+  "prezime": "Stanic",
+  "jmbg": "1313131313133",
+  "tip_Zaposlenog": "Administrator",
+  "strucna_Sprema": "Srednja skola",
+  "brojTelefona": "1313131314"
+}
+
+###
+
+GET {{WebAPI_HostAddress}}/brojevitelefona/PreuzmiSveBrojeveTelefona
+
+###
+
+GET {{WebAPI_HostAddress}}/kategorija/PreuzmiSveKategorije
+
+###
+
+GET {{WebAPI_HostAddress}}/musterija/PreuzmiMusterijePopusti
+
+###
+
+GET {{WebAPI_HostAddress}}/musterija/PreuzmiMusteriju/55
+
+###
+
+GET {{WebAPI_HostAddress}}/musterija/PreuzmiMusterijuBrVoznji/10
+
+###
+
+GET {{WebAPI_HostAddress}}/musterija/PreuzmiSveMusterije
+
+###
+
+GET {{WebAPI_HostAddress}}/osoba/PreuzmiSveOsobe
+
+###
+
+GET {{WebAPI_HostAddress}}/upravlja/PreuzmiIstorijuUpravljanja/1
+
+###
+
+GET {{WebAPI_HostAddress}}/upravlja/PreuzmiSvaUpravljanja
+
+###
+
+GET {{WebAPI_HostAddress}}/upravlja/PreuzmiUpravljanje/107
+
+###
+
+GET {{WebAPI_HostAddress}}/vozilo/PreuzmiSvaVozila
+
+###
+
+GET {{WebAPI_HostAddress}}/vozilo/PreuzmiVozilo/46
+
+###
+
+GET {{WebAPI_HostAddress}}/vozilo/PreuzmiVoziloMarka/BMW
+
+###
+
+GET {{WebAPI_HostAddress}}/voznja/PreuzmiVoznje
+
+###
+
+GET {{WebAPI_HostAddress}}/voznja/PreuzmiVoznju/24
+
+###
+
+GET {{WebAPI_HostAddress}}/zaposleni/PreuzmiSveZaposlene
+
+###
+
+GET {{WebAPI_HostAddress}}/zaposleni/PreuzmiZaposlenog/33
+
+###
+
+GET {{WebAPI_HostAddress}}/zaposleni/PreuzmiZaposlenogIme/Miloje
+
+###
+
+PUT {{WebAPI_HostAddress}}/musterija/PromeniMusteriju
+Content-Type: application/json
+
+{
+  "osobaId": {{osobaId3}},
+  "ulica": "Kenza Mihajla",
+  "broj": "33",
+  "tip_Osobe": "Musterija",
+  "br_Koriscenih_Voznji": 6,
+  "brojTelefona": "1313131317"
+}
+
+###
+
+PUT {{WebAPI_HostAddress}}/osoba/PromeniOsobu
+Content-Type: application/json
+
+{
+  "osobaId": {{osobaId3}},
+  "ulica": "Kenza Lazara",
+  "broj": "34",
+  "tip_Osobe": "string"
+}
+
+###
+
+PUT {{WebAPI_HostAddress}}/upravlja/PromeniUpravljanje
+Content-Type: application/json
+
+{
+  "upravljaId": {{upravljaId}},
+  "idVozilo": 46,
+  "idVozac": 72,
+  "datOd": "2024-02-25T19:09:07.017Z"
+}
+
+###
+
+PUT {{WebAPI_HostAddress}}/vozilo/PromeniVozilo
+Content-Type: application/json
+
+{
+  "voziloId": {{voziloId}},
+  "marka": "Fiat",
+  "tip": "Limuzina",
+  "tipVozila": "Licno_Vozilo",
+  "vlasnikId": 72,
+  "boja": "Zuta"
+}
+
+###
+
+PUT {{WebAPI_HostAddress}}/voznja/PromeniVoznju
+Content-Type: application/json
+
+{
+  "voznjaId": {{voznjaId}},
+  "musterijaId": 9,
+  "pocetna_Stanica": "Aleksandra Medvedeva",
+  "kranja_Stanica": "Aerodrom",
+  "br_Tel_Narucivanja": "9999999999",
+  "adminId": 5,
+  "vreme_Javljanja": "2024-06-16T19:25:35.547Z",
+  "br_Tel_Prim_Poziva": "5555555556",
+  "vozacId": 3,
+  "vreme_Pocetka": "2024-06-16T19:30:35.547Z",
+  "vreme_Kraja": "2024-06-16T19:52:35.548Z"
+}
+
+###
+
+PUT {{WebAPI_HostAddress}}/zaposleni/PromeniZaposlenog
+Content-Type: application/json
+
+{
+  "osobaId": {{zaposleniId}},
+  "ulica": "Macvanska",
+  "broj": "16",
+  "tip_Osobe": "Zaposleni",
+  "lime": "Marko",
+  "srSlovo": "M",
+  "prezime": "Markovic",
+  "jmbg": "1234567898765",
+  "tip_Zaposlenog": "Vozac",
+  "broj_Vozacke": "6666666666",
+  "brojTelefona": "0000011111"
+}
+
+###
+
+DELETE {{WebAPI_HostAddress}}/voznja/IzbrisiVoznju/{{voznjaId2}}
+
+###
+
+DELETE {{WebAPI_HostAddress}}/brojevitelefona/ObrisiBrojTelefona
+Content-Type: application/json
+
+{
+  "id": {
+    "osoba": {
+      "osobaId": {{osobaId}},
+      "ulica": "string",
+      "broj": "string",
+      "tip_Osobe": "string"
+    },
+    "brTel": "1313131316"
+  }
+}
+###
+
+DELETE {{WebAPI_HostAddress}}/kategorija/ObrisiKategoriju
+Content-Type: application/json
+
+{
+  "id": {
+    "zaposleni": {
+      "osobaId": {{osobaId2}},
+      "ulica": "string",
+      "broj": "string",
+      "tip_Osobe": "string",
+      "lime": "string",
+      "srSlovo": "string",
+      "prezime": "string",
+      "jmbg": "string",
+      "tip_Zaposlenog": "string",
+      "broj_Vozacke": "string",
+      "strucna_Sprema": "string",
+      "brojTelefona": "string"
+    },
+    "kategorija": "B1"
+  }
+}
+###

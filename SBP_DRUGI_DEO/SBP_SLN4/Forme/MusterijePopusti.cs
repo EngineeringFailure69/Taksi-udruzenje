@@ -19,8 +19,8 @@
             {
                 int popust = 0;
                 lwPrikaz.Items.Clear();
-                lwPrikaz.View = View.Details; // Koristimo detaljan prikaz
-                lwPrikaz.FullRowSelect = true; // Selektovanje cele redove
+                lwPrikaz.View = View.Details; 
+                lwPrikaz.FullRowSelect = true; 
                 lwPrikaz.GridLines = true;
 
                 lwPrikaz.Columns.Clear();

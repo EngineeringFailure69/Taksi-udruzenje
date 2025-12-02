@@ -13,8 +13,8 @@
         public void popuniPodacima()
         {
             lwPrikazVozila.Items.Clear();
-            lwPrikazVozila.View = View.Details; // Koristimo detaljan prikaz
-            lwPrikazVozila.FullRowSelect = true; // Selektovanje cele redove
+            lwPrikazVozila.View = View.Details; 
+            lwPrikazVozila.FullRowSelect = true; 
             lwPrikazVozila.GridLines = true;
             List<VoziloPregled> podaci = DTOManager.GetVoziloInfos();
 

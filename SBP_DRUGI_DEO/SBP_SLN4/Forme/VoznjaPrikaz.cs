@@ -13,8 +13,8 @@
         public void popuniPodacima()
         {
             lwVoznjaPrikaz.Items.Clear();
-            lwVoznjaPrikaz.View = View.Details; // Koristim detaljan prikaz
-            lwVoznjaPrikaz.FullRowSelect = true; // Selektujem cele redove
+            lwVoznjaPrikaz.View = View.Details; 
+            lwVoznjaPrikaz.FullRowSelect = true; 
             lwVoznjaPrikaz.GridLines = true;
             List<VoznjaPregled> podaci = DTOManager.GetVoznjaInfos();
 
