@@ -1,6 +1,4 @@
-﻿
-namespace TaxiLibrary.Entiteti;
-
+﻿namespace TaxiLibrary.Entiteti;
 internal class Zaposleni : Osoba
 {
     internal protected required virtual string Lime { get; set; }

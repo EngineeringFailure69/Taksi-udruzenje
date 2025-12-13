@@ -1,5 +1,4 @@
 ﻿namespace TaxiLibrary.Entiteti;
-
 internal class Osoba
 {
     internal protected virtual int ID_Osobe { get; set; }
