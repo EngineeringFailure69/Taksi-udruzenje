@@ -166,4 +166,179 @@ public class DataProvider
     }
 
     #endregion
+
+    #region Kategorije
+
+    public static Result<List<Dictionary<int, string>>, ErrorMessage> GetKategorijeInfos()
+    {
+        ISession? session = null;
+        List<KategorijaView> brojInfo = [];
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            var kategorije = session.Query<Kategorije>().ToList();
+
+            var kategorijeView = kategorije.Select(bt => new KategorijaView
+            {
+                Id = new KategorijaIdView
+                {
+                    Zaposleni = new ZaposleniView
+                    {
+                        OsobaId = bt.Kategorija.Zaposleni.ID_Osobe,
+                        lime = bt.Kategorija.Zaposleni.Lime,
+                        SrSlovo = bt.Kategorija.Zaposleni.SrednjeSlovo,
+                        prezime = bt.Kategorija.Zaposleni.Prezime,
+                        jmbg = bt.Kategorija.Zaposleni.JMBG,
+                        Tip_Zaposlenog = bt.Kategorija.Zaposleni.TipZaposlenog,
+                        Broj_Vozacke = bt.Kategorija.Zaposleni.BrojVozacke,
+                        Strucna_Sprema = bt.Kategorija.Zaposleni.StrucnaSprema,
+                    },
+                    Kategorija = bt.Kategorija.Kategorija,
+                }
+            }).ToList();
+
+            List<Dictionary<int, string>> bt1 = new List<Dictionary<int, string>>();
+            foreach (var bt in kategorijeView)
+            {
+                Dictionary<int, string> dict = new Dictionary<int, string>();
+                dict.Add(bt.Id.Zaposleni.OsobaId, bt.Id.Kategorija);
+                bt1.Add(dict);
+                Console.WriteLine($"Zaposleni ID: {bt.Id.Zaposleni.OsobaId}, kategorija: {bt.Id.Kategorija}");
+
+            }
+
+            return bt1;
+        }
+        catch (Exception ex)
+        {
+            return $"Nemoguce preuzeti kategorije. Greska: {ex.Message}".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+    public static async Task<Result<bool, ErrorMessage>> dodajKategoriju(KategorijaView ob)
+    {
+        ISession? session = null;
+        ITransaction? transaction = null;
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            if (ob == null || ob.Id == null || ob.Id.Zaposleni == null)
+            {
+                return "Invalid input object or missing required data.".ToError(400);
+            }
+
+            var zaposleniId = ob.Id.Zaposleni?.OsobaId;
+            if (zaposleniId == null)
+            {
+                return "Zaposleni ID is null.".ToError(400);
+            }
+
+            var zaposleni = await session.LoadAsync<Zaposleni>(zaposleniId);
+            if (zaposleni == null)
+            {
+                return $"Zaposleni with ID {zaposleniId} not found.".ToError(404);
+            }
+
+            Kategorije novaKategorija = new Kategorije
+            {
+                Kategorija = new KategorijaId
+                {
+                    Zaposleni = zaposleni,
+                    Kategorija = ob.Id.Kategorija 
+                }
+            };
+
+            transaction = session.BeginTransaction();
+            await session.SaveAsync(novaKategorija);
+            await transaction.CommitAsync();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (transaction != null)
+            {
+                await transaction.RollbackAsync();
+            }
+            return ex.Message.ToError(500); //500 za neocekivane greske
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+    public static async Task<Result<bool, ErrorMessage>> DeleteKategorija(KategorijaView ob)
+    {
+        ISession? session = null;
+        ITransaction? transaction = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            if (ob == null || ob.Id == null || ob.Id.Zaposleni == null || string.IsNullOrEmpty(ob.Id.Kategorija))
+            {
+                return "Invalid input data.".ToError(400);
+            }
+
+            var zaposleni = await session.LoadAsync<Zaposleni>(ob.Id.Zaposleni.OsobaId);
+            if (zaposleni == null)
+            {
+                return $"Zaposleni with ID {ob.Id.Zaposleni.OsobaId} not found.".ToError(404);
+            }
+
+            transaction = session.BeginTransaction();
+
+            var kategorija = await session.GetAsync<Kategorije>(new KategorijaId
+            {
+                Zaposleni = zaposleni,
+                Kategorija = ob.Id.Kategorija
+            });
+
+            if (kategorija == null)
+            {
+                return $"Kategorija {ob.Id.Kategorija} for zaposleni ID {ob.Id.Zaposleni.OsobaId} not found.".ToError(404);
+            }
+
+            await session.DeleteAsync(kategorija);
+
+            await transaction.CommitAsync();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (transaction != null)
+            {
+                await transaction.RollbackAsync();
+            }
+            return ex.Message.ToError(404);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+
+    #endregion
 }
