@@ -75,6 +75,88 @@ public class DataProvider
 
         return ob;
     }
+    public static Result<List<MusterijaView>, ErrorMessage> GetMusterijaVoznje(int voznje)
+    {
+        List<MusterijaView> musterijaInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Musterija> musterije =
+                    from o in session.Query<Musterija>()
+                    where o.BrKoriscenihVoznji == voznje
+                    select o;
+
+                foreach (Musterija m in musterije)
+                {
+                    musterijaInfo.Add(new MusterijaView(m.ID_Osobe, m.Ulica, m.Broj, m.TipOsobe, m.BrKoriscenihVoznji));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti musteriju".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return musterijaInfo;
+    }
+    public static async Task<Result<bool, ErrorMessage>> UpdateMusterija(MusterijaView? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            if (ob == null || ob.OsobaId <= 0)
+            {
+                return "Invalid input data.".ToError(400);
+            }
+
+            var musterija = await session.LoadAsync<Musterija>(ob.OsobaId);
+            if (musterija == null)
+            {
+                return $"Musterija with ID {ob.OsobaId} not found.".ToError(404);
+            }
+
+            musterija.Ulica = ob.ulica;
+            musterija.Broj = ob.broj;
+            musterija.TipOsobe = ob.Tip_Osobe ?? "Musterija";
+            musterija.BrKoriscenihVoznji = ob.Br_Koriscenih_Voznji;
+
+            await session.SaveOrUpdateAsync(musterija);
+            await session.FlushAsync();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message.ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
     public static async Task<Result<bool, ErrorMessage>> dodajMusteriju(MusterijaView ob)
     {
         ISession? session = null;
@@ -128,6 +210,48 @@ public class DataProvider
             session?.Close();
             session?.Dispose();
         }
+    }
+    public static Result<List<MusterijaView>, ErrorMessage> GetMusterijaPopustInfos()
+    {
+        List<MusterijaView> musterijaInfo = new List<MusterijaView>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Musterija> musterije = from o in session.Query<Musterija>()
+                                                   where o.BrKoriscenihVoznji >= 10
+                                                   select o;
+
+                foreach (Musterija m in musterije)
+                {
+                    musterijaInfo.Add(new MusterijaView(
+                        m.ID_Osobe,
+                        m.Ulica,
+                        m.Broj,
+                        m.TipOsobe,
+                        m.BrKoriscenihVoznji
+                        ));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti musterije".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return musterijaInfo;
     }
 
     #endregion

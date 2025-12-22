@@ -55,4 +55,55 @@ public class MusterijaController : ControllerBase
 
         return Ok(zaposleni);
     }
+
+    [HttpGet]
+    [Route("PreuzmiMusterijuBrVoznji/{brVoznji}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public IActionResult PreuzmiMusterijuBrVoznji(int brVoznji)
+    {
+        (bool isError, var zaposleni, ErrorMessage? error) = DataProvider.GetMusterijaVoznje(brVoznji);
+
+        if (isError)
+        {
+            return StatusCode(error?.StatusCode ?? 400, error?.Message);
+        }
+
+        return Ok(zaposleni);
+    }
+
+    [HttpGet]
+    [Route("PreuzmiMusterijePopusti")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public IActionResult PreuzmiMusterijePopusti()
+    {
+        (bool isError, var musterije, ErrorMessage? error) = DataProvider.GetMusterijaPopustInfos();
+
+        if (isError)
+        {
+            return StatusCode(error?.StatusCode ?? 400, error?.Message);
+        }
+
+        return Ok(musterije);
+    }
+
+    [HttpPut]
+    [Route("PromeniMusteriju")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> PromeniMusteriju([FromBody] MusterijaView? m)
+    {
+        var data = await DataProvider.UpdateMusterija(m);
+
+        if (data.IsError)
+        {
+            return StatusCode(data.Error.StatusCode, data.Error.Message);
+        }
+
+        return Ok($"Uspesno azurirana musterija");
+    }
 }
