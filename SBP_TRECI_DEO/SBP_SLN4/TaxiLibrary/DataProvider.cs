@@ -2,6 +2,136 @@
 
 public class DataProvider
 {
+    #region Musterija
+
+    public static Result<List<MusterijaView>, ErrorMessage> GetMusterijaInfos()
+    {
+        List<MusterijaView> musterijaInfo = new List<MusterijaView>();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Musterija> musterije =
+                from o in session.Query<Musterija>()
+                select o;
+
+                foreach (Musterija m in musterije)
+                {
+                    musterijaInfo.Add(new MusterijaView(
+                        m.ID_Osobe,
+                        m.Ulica,
+                        m.Broj,
+                        m.TipOsobe,
+                        m.BrKoriscenihVoznji));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return $"Nemoguce vratiti sve zaposlene. {ex.Message}".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return musterijaInfo;
+    }
+    public static Result<MusterijaView, ErrorMessage> GetMusterija(int idmusterije)
+    {
+        MusterijaView ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                Musterija o = session.Load<Musterija>(idmusterije);
+                ob = new MusterijaView(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.BrKoriscenihVoznji);
+            }
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti musteriju.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return ob;
+    }
+    public static async Task<Result<bool, ErrorMessage>> dodajMusteriju(MusterijaView ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null && ob != null)
+            {
+                ob.Tip_Osobe = "Musterija";
+
+                Musterija o = new Musterija
+                {
+                    Ulica = ob.ulica,
+                    Broj = ob.broj,
+                    TipOsobe = ob.Tip_Osobe,
+                    BrKoriscenihVoznji = ob.Br_Koriscenih_Voznji
+                };
+
+                await session.SaveAsync(o);
+                await session.FlushAsync();
+
+                BrojeviTelefona brojTelefona = new BrojeviTelefona
+                {
+                    BrojTelefona = new BrojeviTelefonaId
+                    {
+                        Osoba = o,
+                        BrojTelefona = ob.BrojTelefona
+                    }
+                };
+
+                await session.SaveAsync(brojTelefona);
+                await session.FlushAsync();
+                return true;
+            }
+            else
+            {
+                return "Session or MusterijaView object is null.".ToError(400);
+            }
+        }
+        catch (Exception ex)
+        {
+            return GetError("Nemoguce dodati musteriju.", 404);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+
+    #endregion
+
     #region BrojeviTelefona
 
     public static Result<List<Dictionary<int, string>>, ErrorMessage> GetBrojInfos()
