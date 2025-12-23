@@ -2,6 +2,91 @@
 
 public class DataProvider
 {
+    #region Upravlja
+    public static Result<List<UpravljaView>, ErrorMessage> GetUprInfos()
+    {
+        List<UpravljaView> upravljanjaInfos = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Upravlja> upravljanja =
+                    from o in session.Query<Upravlja>()
+                    select o;
+
+                foreach (Upravlja o in upravljanja)
+                {
+                    if (o.ZaposleniVozac != null && o.Vozilo != null)
+                    {
+                        upravljanjaInfos.Add(new UpravljaView(o.ID_Upravljanja, o.Vozilo.ID_Vozila, o.ZaposleniVozac.ID_Osobe, o.DatumOd, o.DatumDo));
+                    }
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti sva upravljanja.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return upravljanjaInfos;
+    }
+    public static async Task<Result<bool, ErrorMessage>> dodajUpravljanje(UpravljaView ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            if (session != null && ob != null)
+            {
+                Upravlja o = new Upravlja
+                {
+                    Vozilo = await session.LoadAsync<Vozilo>(ob.IdVozilo),
+                    ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.IdVozac),
+                    DatumOd = ob.DatOd,
+                    DatumDo = ob.DatDo
+                };
+
+                await session.SaveAsync(o);
+                await session.FlushAsync();
+                return true;
+            }
+            else
+            {
+                return "Session or UpravljaView object is null.".ToError(400);
+            }
+        }
+        catch (Exception)
+        {
+            return GetError("Nemoguce dodati voznju.", 404);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+
+    #endregion
+
     #region Musterija
 
     public static Result<List<MusterijaView>, ErrorMessage> GetMusterijaInfos()
@@ -254,6 +339,72 @@ public class DataProvider
         return musterijaInfo;
     }
 
+    #endregion
+
+    #region Osoba
+    public static Result<List<OsobaView>, ErrorMessage> GetOsobaInfos()
+    {
+        List<OsobaView> osobaInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null)
+            {
+                IEnumerable<Osoba> osobe =
+                    from o in session.Query<Osoba>()
+                    select o;
+
+                foreach (Osoba o in osobe)
+                {
+                    osobaInfo.Add(new OsobaView(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti sve osobe.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return osobaInfo;
+    }
+    public static async Task<Result<OsobaView, ErrorMessage>> UpdateOsoba(OsobaView? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session != null && ob != null)
+            {
+                Osoba o = await session.LoadAsync<Osoba>(ob.OsobaId);
+                o.Ulica = ob.ulica;
+                o.Broj = ob.broj;
+
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception)
+        {
+            return "Nemoguce azurirati osobu.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
     #endregion
 
     #region BrojeviTelefona
