@@ -193,6 +193,86 @@ public class DataProvider
 
     #endregion
 
+    #region Vozilo
+    public static Result<List<VoziloView>, ErrorMessage> GetVoziloInfos()
+    {
+        List<VoziloView> voziloInfos = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (session == null || !session.IsConnected)
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            if (session != null)
+            {
+                IEnumerable<Vozilo> vozila =
+                    from o in session.Query<Vozilo>()
+                    select o;
+
+                foreach (Vozilo o in vozila)
+                {
+                    voziloInfos.Add(new VoziloView(o.ID_Vozila, o.Marka, o.Tip, o.TipVozila, o.GodinaProizvodnje, o.DatumIstekaRegistracije, o.RegistarskaOznaka, o.Zaposleni?.ID_Osobe, o.Zaposleni != null ? o.Zaposleni.Lime : "Nema vlasnika", o.Boja));
+                }
+            }
+
+        }
+        catch (Exception)
+        {
+            return "Nemoguce vratiti sva vozila.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return voziloInfos;
+    }
+    public static Result<List<VoziloView>, ErrorMessage> GetVoziloMarka(string marka)
+    {
+        List<VoziloView> voziloInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Vozilo> vozila =
+                    from o in session.Query<Vozilo>()
+                    where o.Marka != null && o.Marka == marka
+                    select o;
+
+                foreach (Vozilo o in vozila)
+                {
+                    voziloInfo.Add(new VoziloView(o.ID_Vozila, o.Marka, o.Tip, o.TipVozila, o.GodinaProizvodnje,
+                    o.DatumIstekaRegistracije, o.RegistarskaOznaka, o.Zaposleni != null ? o.Zaposleni.ID_Osobe : null, o.Boja));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti vozila.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return voziloInfo;
+    }
+    #endregion
+
     #region Musterija
 
     public static Result<List<MusterijaView>, ErrorMessage> GetMusterijaInfos()
