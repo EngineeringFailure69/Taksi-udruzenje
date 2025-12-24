@@ -84,6 +84,112 @@ public class DataProvider
             session?.Dispose();
         }
     }
+    public static async Task<Result<UpravljaView?, ErrorMessage>> UpdateUpravlja(UpravljaView? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null && ob != null)
+            {
+                Upravlja o = await session.LoadAsync<Upravlja>(ob.UpravljaId);
+                o.Vozilo = await session.LoadAsync<Vozilo>(ob.IdVozilo);
+                o.ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.IdVozac);
+                o.DatumOd = ob.DatOd;
+                o.DatumDo = ob.DatDo;
+
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce azurirati upravljanje.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return ob;
+    }
+    public static Result<UpravljaView, ErrorMessage> GetUpravljanje(int idupravlja)
+    {
+        UpravljaView ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                Upravlja o = session.Load<Upravlja>(idupravlja);
+                ob = new UpravljaView(o.ID_Upravljanja, o.Vozilo.ID_Vozila, o.ZaposleniVozac.ID_Osobe, o.DatumOd, o.DatumDo);
+            }
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti upravljanje.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return ob;
+    }
+    public static Result<List<UpravljaView>, ErrorMessage> GetIstorijaUpravlja(int idvozila)
+    {
+        List<UpravljaView> upravljanjaInfos = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Upravlja> upravljanja =
+                    from o in session.Query<Upravlja>()
+                    where o.Vozilo.ID_Vozila == idvozila
+                    select o;
+
+                foreach (Upravlja o in upravljanja)
+                {
+                    if (o.ZaposleniVozac != null && o.Vozilo != null)
+                    {
+                        upravljanjaInfos.Add(new UpravljaView(o.ID_Upravljanja, o.Vozilo.ID_Vozila, o.ZaposleniVozac.ID_Osobe, o.Vozilo.RegistarskaOznaka, o.DatumOd, o?.DatumDo));
+                    }
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti istoriju upravljanja.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return upravljanjaInfos;
+    }
 
     #endregion
 
