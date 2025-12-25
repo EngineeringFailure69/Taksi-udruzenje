@@ -232,6 +232,129 @@ public class DataProvider
 
         return voziloInfos;
     }
+    public static async Task<Result<bool, ErrorMessage>> dodajVozilo(VoziloView ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null && ob != null)
+            {
+                Vozilo o = new Vozilo
+                {
+                    Marka = ob.marka,
+                    Tip = ob.tip,
+                    TipVozila = ob.tipVozila,
+                    GodinaProizvodnje = ob.godinaProizvodnje,
+                    DatumIstekaRegistracije = ob.DatIstekaReg,
+                    RegistarskaOznaka = ob.RegOznaka,
+                    Boja = ob.boja
+                };
+
+                if (ob.VlasnikId.HasValue)
+                {
+                    o.Zaposleni = await session.LoadAsync<Zaposleni>(ob.VlasnikId.Value);
+                }
+
+                await session.SaveAsync(o);
+                await session.FlushAsync();
+                return true;
+            }
+            else
+            {
+                return "Session or UpravljaView object is null.".ToError(400);
+            }
+        }
+        catch (Exception)
+        {
+            return GetError("Nemoguce dodati vozilo.", 404);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+    public static async Task<Result<VoziloView?, ErrorMessage>> UpdateVozilo(VoziloView? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null && ob != null)
+            {
+                Vozilo o = await session.LoadAsync<Vozilo>(ob.VoziloId);
+                o.Marka = ob.marka;
+                o.Tip = ob.tip;
+                o.TipVozila = ob.tipVozila;
+                o.GodinaProizvodnje = ob.godinaProizvodnje;
+                o.DatumIstekaRegistracije = ob.DatIstekaReg;
+                o.RegistarskaOznaka = ob.RegOznaka;
+                o.Boja = ob.boja;
+                if (ob.VlasnikId.HasValue)
+                {
+                    o.Zaposleni = await session.LoadAsync<Zaposleni>(ob.VlasnikId);
+                }
+                else
+                {
+                    o.Zaposleni = null;
+                }
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce azurirati vozilo.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+    public static Result<VoziloView, ErrorMessage> GetVozilo(int idvozila)
+    {
+        VoziloView ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                Vozilo o = session.Load<Vozilo>(idvozila);
+                ob = new VoziloView(o.ID_Vozila, o.Marka, o.Tip, o.TipVozila, o.GodinaProizvodnje,
+                    o.DatumIstekaRegistracije, o.RegistarskaOznaka, o.Zaposleni != null ? o.Zaposleni.ID_Osobe : null, o.Boja);
+            }
+        }
+        catch (Exception)
+        {
+            return "Nemoguce vratiti vozilo.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return ob;
+    }
     public static Result<List<VoziloView>, ErrorMessage> GetVoziloMarka(string marka)
     {
         List<VoziloView> voziloInfo = [];
