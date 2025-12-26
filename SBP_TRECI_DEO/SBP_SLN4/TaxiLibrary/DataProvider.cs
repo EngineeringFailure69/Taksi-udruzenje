@@ -650,6 +650,192 @@ public class DataProvider
 
     #endregion
 
+    #region Voznja
+    public static Result<List<VoznjaView>, ErrorMessage> GetVoznjaInfos()
+    {
+        List<VoznjaView> voznjaInfos = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (session == null || !session.IsConnected)
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Voznja> voznje = session.Query<Voznja>().ToList();
+
+                foreach (Voznja o in voznje)
+                {
+                    voznjaInfos.Add(new VoznjaView(o));
+                }
+            }
+
+        }
+        catch (Exception)
+        {
+            return "Nemoguce vratiti sve voznje.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return voznjaInfos;
+    }
+    public static async Task<Result<bool, ErrorMessage>> dodajVoznju(VoznjaView ob)
+    {
+        ISession? session = null;
+        ITransaction? transaction = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            transaction = session.BeginTransaction();
+
+            Musterija musterija = await session.GetAsync<Musterija>(ob.MusterijaId);
+            if (musterija == null)
+            {
+                return "Musterija sa ovim ID ne postoji".ToError(400);
+            }
+
+            musterija.BrKoriscenihVoznji += 1;
+
+            Voznja o = new Voznja
+            {
+                Musterija = await session.LoadAsync<Musterija>(ob.MusterijaId),
+                PocetnaStanica = ob.Pocetna_Stanica,
+                KrajnjaStanica = ob.Kranja_Stanica,
+                BrTelNarucivanja = ob.Br_Tel_Narucivanja,
+                ZaposleniAdmin = await session.LoadAsync<Zaposleni>(ob.AdminId),
+                VremeJavljanja = ob.Vreme_Javljanja,
+                BrTelPrimljenogPoziva = ob.Br_Tel_Prim_Poziva,
+                ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.VozacId),
+                VremePocetka = ob.Vreme_Pocetka,
+                VremeKraja = ob.Vreme_Kraja
+            };
+
+            await session.UpdateAsync(musterija);
+
+            await session.SaveAsync(o);
+            await transaction.CommitAsync();
+            await session.FlushAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            if (transaction != null)
+            {
+                await transaction.RollbackAsync();
+            }
+            return GetError("Nemoguce dodati voznju.", 404);
+        }
+        finally
+        {
+            session?.Close();
+        }
+    }
+    public static async Task<Result<VoznjaView, ErrorMessage>> UpdateVoznja(VoznjaView? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null && ob != null)
+            {
+                Voznja o = await session.LoadAsync<Voznja>(ob.VoznjaId);
+                o.Musterija = await session.LoadAsync<Musterija>(ob.MusterijaId);
+                o.PocetnaStanica = ob.Pocetna_Stanica;
+                o.KrajnjaStanica = ob.Kranja_Stanica;
+                o.BrTelNarucivanja = ob.Br_Tel_Narucivanja;
+                o.ZaposleniAdmin = await session.LoadAsync<Zaposleni>(ob.AdminId);
+                o.VremeJavljanja = ob.Vreme_Javljanja;
+                o.BrTelPrimljenogPoziva = ob.Br_Tel_Prim_Poziva;
+                o.ZaposleniVozac = await session.LoadAsync<Zaposleni>(ob.VozacId);
+                o.VremePocetka = ob.Vreme_Pocetka;
+                o.VremeKraja = ob.Vreme_Kraja;
+
+                await session.UpdateAsync(o);
+                await session.FlushAsync();
+            }
+        }
+        catch (Exception)
+        {
+            return "Nemoguce azurirati voznju.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+    public static async Task<Result<VoznjaView, ErrorMessage>> GetVoznja(int idvoznje)
+    {
+        VoznjaView ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                Voznja o = await session.LoadAsync<Voznja>(idvoznje);
+                ob = new VoznjaView(o);
+            }
+        }
+        catch (Exception)
+        {
+            return "Nemoguce je vratiti trazene podatke".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+        }
+
+        return ob;
+    }
+    public static async Task<Result<bool, ErrorMessage>> obrisiVoznju(int id)
+    {
+        ISession? s = null;
+        try
+        {
+            s = DataLayer.GetSession();
+            Voznja o = await s.LoadAsync<Voznja>(id);
+
+            await s.DeleteAsync(o);
+            await s.FlushAsync();
+
+            s.Close();
+            s.Dispose();
+            return true;
+        }
+        catch (Exception)
+        {
+            return "Nemoguce obrisati voznju.".ToError(400);
+        }
+    }
+
+    #endregion
+
     #region Osoba
     public static Result<List<OsobaView>, ErrorMessage> GetOsobaInfos()
     {
