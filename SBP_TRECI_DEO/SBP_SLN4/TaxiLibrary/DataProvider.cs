@@ -396,6 +396,227 @@ public class DataProvider
     }
     #endregion
 
+    #region Zaposleni
+    public static Result<List<ZaposleniView>, ErrorMessage> GetZaposleniInfos()
+    {
+        List<ZaposleniView> zaposleniInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Zaposleni> zaposleni =
+                    from o in session.Query<Zaposleni>()
+                    select o;
+
+                foreach (Zaposleni o in zaposleni)
+                {
+                    zaposleniInfo.Add(new ZaposleniView(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.Lime, o.SrednjeSlovo,
+                        o.Prezime, o.JMBG, o.TipZaposlenog, o.BrojVozacke, o.StrucnaSprema));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti sva vozila.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return zaposleniInfo;
+    }
+    public static Result<ZaposleniView, ErrorMessage> GetZaposleni(int idzaposlenog)
+    {
+        ZaposleniView ob = new();
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                Zaposleni o = session.Load<Zaposleni>(idzaposlenog);
+                ob = new ZaposleniView(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.Lime, o.SrednjeSlovo, o.Prezime, o.JMBG,
+                    o.TipZaposlenog, o.BrojVozacke, o.StrucnaSprema);
+            }
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti zaposlenog.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return ob;
+    }
+    public static async Task<Result<bool, ErrorMessage>> UpdateZaposleni(ZaposleniView? ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+
+            if (ob == null || ob.OsobaId <= 0)
+            {
+                return "Invalid input data.".ToError(400);
+            }
+
+            var zaposleni = await session.LoadAsync<Zaposleni>(ob.OsobaId);
+            if (zaposleni == null)
+            {
+                return $"Zaposleni with ID {ob.OsobaId} not found.".ToError(404);
+            }
+
+            zaposleni.Ulica = ob.ulica;
+            zaposleni.Broj = ob.broj;
+            zaposleni.TipOsobe = ob.Tip_Osobe ?? "Zaposleni";
+            zaposleni.Lime = ob.lime;
+            zaposleni.SrednjeSlovo = ob.SrSlovo;
+            zaposleni.Prezime = ob.prezime;
+            zaposleni.JMBG = ob.jmbg;
+            zaposleni.TipZaposlenog = ob.Tip_Zaposlenog;
+            zaposleni.BrojVozacke = ob.Broj_Vozacke;
+            zaposleni.StrucnaSprema = ob.Strucna_Sprema;
+
+            await session.SaveOrUpdateAsync(zaposleni);
+            await session.FlushAsync();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            return ex.Message.ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+    public static async Task<Result<bool, ErrorMessage>> dodajZaposlenog(ZaposleniView ob)
+    {
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null && ob != null)
+            {
+                ob.Tip_Osobe = "Zaposleni";
+
+                Zaposleni o = new Zaposleni
+                {
+                    Ulica = ob.ulica,
+                    Broj = ob.broj,
+                    TipOsobe = ob.Tip_Osobe,
+                    Lime = ob.lime,
+                    SrednjeSlovo = ob.SrSlovo,
+                    Prezime = ob.prezime,
+                    JMBG = ob.jmbg,
+                    TipZaposlenog = ob.Tip_Zaposlenog,
+                    BrojVozacke = ob.Broj_Vozacke,
+                    StrucnaSprema = ob.Strucna_Sprema,
+                };
+
+                await session.SaveAsync(o);
+                await session.FlushAsync();
+
+                BrojeviTelefona brojTelefona = new BrojeviTelefona
+                {
+                    BrojTelefona = new BrojeviTelefonaId
+                    {
+                        Osoba = o,
+                        BrojTelefona = ob.BrojTelefona
+                    }
+                };
+
+                await session.SaveAsync(brojTelefona);
+                await session.FlushAsync();
+                return true;
+            }
+            else
+            {
+                return "Session or ZaposleniView object is null.".ToError(400);
+            }
+        }
+        catch (Exception ex)
+        {
+            return GetError("Nemoguce dodati zaposlenog.", 404);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+    }
+    public static Result<List<ZaposleniView>, ErrorMessage> GetZaposleniIme(string ime)
+    {
+        List<ZaposleniView> zaposleniInfo = [];
+        ISession? session = null;
+
+        try
+        {
+            session = DataLayer.GetSession();
+            if (!(session?.IsConnected ?? false))
+            {
+                return "Nemoguce otvoriti sesiju.".ToError(403);
+            }
+            if (session != null)
+            {
+                IEnumerable<Zaposleni> zaposleni =
+                    from o in session.Query<Zaposleni>()
+                    where o.Lime != null && o.Lime == ime
+                    select o;
+
+                foreach (Zaposleni o in zaposleni)
+                {
+                    zaposleniInfo.Add(new ZaposleniView(o.ID_Osobe, o.Ulica, o.Broj, o.TipOsobe, o.Lime, o.SrednjeSlovo,
+                        o.Prezime, o.JMBG, o.TipZaposlenog, o.BrojVozacke, o.StrucnaSprema));
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return "Nemoguce vratiti zaposlenog.".ToError(400);
+        }
+        finally
+        {
+            session?.Close();
+            session?.Dispose();
+        }
+
+        return zaposleniInfo;
+    }
+    #endregion
+
     #region Musterija
 
     public static Result<List<MusterijaView>, ErrorMessage> GetMusterijaInfos()
